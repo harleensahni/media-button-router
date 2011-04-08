@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.gmail.harleenssahni.mbr"
+      android:versionCode="1"
+      android:versionName="1.0">
+
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".MediaButtonConfigure"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".MediaButtonList"
+                  android:label="Media button list">
+            <intent-filter>
+                <action android:name="com.gmail.harleenssahni.VIEW_MEDIA_LIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+		<receiver android:name=".receivers.MediaButtonReceiver">
+			<intent-filter android:priority="2147483647">
+				<action android:name="android.intent.action.MEDIA_BUTTON"/>
+			</intent-filter>
+		</receiver>
+		<receiver android:name = ".receivers.BootReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED"/>
+			</intent-filter>
+		</receiver>
+		<receiver android:name = ".receivers.PackageAddedReceiverdReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.PACKAGE_ADDED"/>
+			</intent-filter>
+		</receiver>
+		<receiver android:name = ".receivers.PackageRemovedReceiverdReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.PACKAGE_REMOVED"/>
+			</intent-filter>
+		</receiver>
+
+    </application>
+    <uses-permission android:name = "android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name = "android.permission.BROADCAST_PACKAGE_REMOVED"/>
+    <uses-permission android:name = "android.permission.WAKE_LOCK"/>
+    
+</manifest>
