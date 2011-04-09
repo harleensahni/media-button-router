@@ -187,13 +187,16 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 // the app shouldn't handle
                 // pause if music is already playing, it should go to whoever is
                 // playing the music.
-                actionText = "Playing";
+                actionText = "Play";
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
-                actionText = "Going to Next";
+                actionText = "Next";
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                actionText = "Going to Previous";
+                actionText = "Previous";
+                break;
+            case KeyEvent.KEYCODE_MEDIA_STOP:
+                actionText = "Stop";
                 break;
 
             }
