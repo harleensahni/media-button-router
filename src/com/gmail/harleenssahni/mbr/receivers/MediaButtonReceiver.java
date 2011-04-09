@@ -118,7 +118,8 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
                     if (locked) {
 
-                        // XXX See if this actually makes a difference
+                        // XXX See if this actually makes a difference, might
+                        // not be needed if we move more things to onCreate?
                         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
                         // acquire temp wake lock
                         WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP

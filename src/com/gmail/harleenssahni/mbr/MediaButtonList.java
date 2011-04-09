@@ -230,6 +230,9 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
         powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
+        // XXX Is mode private right? Will this result in the selection being
+        // stored in different places for this
+        // and MediaButtonListLocked
         // btButtonSelection = savedInstanceState != null ?
         // savedInstanceState.getInt(SELECTION_KEY, -1) : -1;
         btButtonSelection = getPreferences(MODE_PRIVATE).getInt(SELECTION_KEY, -1);
@@ -273,20 +276,20 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
 
-                View v = convertView;
-                if (v == null) {
+                View view = convertView;
+                if (view == null) {
                     LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    v = vi.inflate(R.layout.media_receiver_view, null);
+                    view = vi.inflate(R.layout.media_receiver_view, null);
                 }
 
                 ResolveInfo resolveInfo = receivers.get(position);
 
-                ImageView iv = (ImageView) v.findViewById(R.id.receiverAppImage);
-                iv.setImageDrawable(resolveInfo.loadIcon(getPackageManager()));
+                ImageView imageView = (ImageView) view.findViewById(R.id.receiverAppImage);
+                imageView.setImageDrawable(resolveInfo.loadIcon(getPackageManager()));
 
-                TextView textView = (TextView) v.findViewById(R.id.receiverAppName);
+                TextView textView = (TextView) view.findViewById(R.id.receiverAppName);
                 textView.setText(getAppName(resolveInfo));
-                return v;
+                return view;
 
             }
         });
@@ -347,6 +350,12 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
         super.onStart();
         Log.d(TAG, "On Start called");
+
+        // TODO Originally thought most work should happen onResume and onPause.
+        // I don't know if the onResume part is
+        // right since you can't actually ever get back to this view, single
+        // instance, and not shown in recents. Maybe it's possible if ANOTHER
+        // dialog opens in front of ours?
     }
 
     /**
@@ -356,9 +365,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        // TODO Add timeout so this activity finishes after x seconds of no user
-        // interaction without
-        // forwarding selection.
 
         // TODO Clean this up, figure out which things need to be set on the
         // list view and which don't.
