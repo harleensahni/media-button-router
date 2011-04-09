@@ -33,6 +33,9 @@
             </intent-filter>
         </activity>
 		<receiver android:name=".receivers.MediaButtonReceiver">
+			<!--  This priority is higher than is supposed to be used for user apps, 
+			but we need to beat out other receivers since we're trying to manage it all ourselves. 
+			Besides, WinAmp uses this priority (that's why we can't beat it)-->
 			<intent-filter android:priority="2147483647">
 				<action android:name="android.intent.action.MEDIA_BUTTON"/>
 			</intent-filter>
