@@ -133,6 +133,10 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                             select();
                             break;
+                        case KeyEvent.KEYCODE_MEDIA_STOP:
+                            // just cancel
+                            finish();
+                            break;
                         default:
                             break;
                         }
@@ -374,6 +378,9 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                 header.setText("Android Media Router: Previous");
+                break;
+            case KeyEvent.KEYCODE_MEDIA_STOP:
+                header.setText("Android Media Router: Stop");
                 break;
             }
 
