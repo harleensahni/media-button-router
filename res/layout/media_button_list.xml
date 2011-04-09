@@ -8,7 +8,7 @@
 			<ImageView android:visibility="gone" android:id="@+id/mediaImage" android:layout_width="wrap_content" style="@style/MediaButton.Play" android:layout_height="wrap_content"></ImageView>
 			<TextView android:text="Media Button Router" android:id="@+id/dialogHeader" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_vertical"></TextView>
 		</LinearLayout>
-		<ListView android:id="@android:id/list" android:layout_height="wrap_content" android:layout_width="match_parent"></ListView>
+		<ListView android:id="@android:id/list" android:layout_height="wrap_content" android:layout_width="match_parent" android:paddingTop="10dp" android:paddingBottom="10dp" ></ListView>
 		<LinearLayout android:id="@+id/linearLayout1" android:layout_width="wrap_content" android:orientation="horizontal" android:layout_height="wrap_content">
 			<Button android:id="@+id/cancelButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cancel_button"></Button>
 			<Button android:id="@+id/disableButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/disable_button"></Button>
