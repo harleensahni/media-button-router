@@ -21,10 +21,13 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -154,6 +157,14 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
      */
     private ScheduledFuture<?> timeoutScheduledFuture;
 
+    private View cancelButton;
+
+    private View disableButton;
+
+    private ImageView mediaImage;
+
+    private TextView header;
+
     /**
      * {@inheritDoc}
      */
@@ -212,7 +223,9 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
         powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
-        btButtonSelection = savedInstanceState != null ? savedInstanceState.getInt(SELECTION_KEY, -1) : -1;
+        // btButtonSelection = savedInstanceState != null ?
+        // savedInstanceState.getInt(SELECTION_KEY, -1) : -1;
+        btButtonSelection = getPreferences(MODE_PRIVATE).getInt(SELECTION_KEY, -1);
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         receivers = getPackageManager().queryBroadcastReceivers(mediaButtonIntent,
@@ -229,7 +242,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 }
             }
         }
-        // TODO sort receivers by MRU so user doesn't have to skip as many apps,
+        // TODO MAYBE sort receivers by MRU so user doesn't have to skip as many
+        // apps,
         // right now apps are sorted by priority (not set by the user, set by
         // the app authors.. )
         setListAdapter(new BaseAdapter() {
@@ -252,15 +266,35 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
 
-                TextView textView = new TextView(MediaButtonList.this);
+                View v = convertView;
+                if (v == null) {
+                    LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    v = vi.inflate(R.layout.media_receiver_view, null);
+                }
+
                 ResolveInfo resolveInfo = receivers.get(position);
-                // TODO where should I re-write priorities for other app's
 
-                textView.setText(resolveInfo.activityInfo.applicationInfo.loadLabel(getPackageManager()));
+                ImageView iv = (ImageView) v.findViewById(R.id.receiverAppImage);
+                iv.setImageDrawable(resolveInfo.loadIcon(getPackageManager()));
 
-                return textView;
+                TextView textView = (TextView) v.findViewById(R.id.receiverAppName);
+                textView.setText(getAppName(resolveInfo));
+                return v;
+
             }
         });
+        header = (TextView) findViewById(R.id.dialogHeader);
+        cancelButton = findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        disableButton = findViewById(R.id.disableButton);
+        mediaImage = (ImageView) findViewById(R.id.mediaImage);
+
         Log.i(TAG, "Media button selector created.");
     }
 
@@ -297,6 +331,14 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             wakeLock.release();
         }
         timeoutExecutor.shutdownNow();
+        getPreferences(MODE_PRIVATE).edit().putInt(SELECTION_KEY, btButtonSelection).commit();
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+        Log.d(TAG, "On Start called");
     }
 
     /**
@@ -322,6 +364,18 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             getListView().setFocusable(true);
             getListView().setFocusableInTouchMode(true);
 
+            switch (trappedKeyEvent.getKeyCode()) {
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                header.setText("Android Media Router: Play");
+                break;
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                header.setText("Android Media Router: Next");
+                break;
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                header.setText("Android Media Router: Previous");
+                break;
+            }
+
         } else {
             Log.i(TAG, "Media button selector launched without key event, started with intent: " + getIntent());
 
@@ -340,8 +394,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // alternative would be to change all of the selection logic to happen
         // in a service?? don't know if that process life cycle would fit well
         // -- look into
-        wakeLock = powerManager
-                .newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+        // added On after release so screen stays on a little longer instead of
+        // immediately to try and stop resume pause cycle that sometimes
+        // happens.
+        wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK
+                | PowerManager.ON_AFTER_RELEASE, TAG);
         wakeLock.setReferenceCounted(false);
 
         // FIXME The wakelock is too late here. We end up doing multiple
@@ -386,15 +443,16 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         resetTimeout();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(SELECTION_KEY, btButtonSelection);
-        Log.d(TAG, "Saving selection state, selected is " + btButtonSelection);
-    }
+    //
+    // /**
+    // * {@inheritDoc}
+    // */
+    // @Override
+    // protected void onSaveInstanceState(Bundle outState) {
+    // super.onSaveInstanceState(outState);
+    // outState.putInt(SELECTION_KEY, btButtonSelection);
+    // Log.d(TAG, "Saving selection state, selected is " + btButtonSelection);
+    // }
 
     /**
      * Forwards the {@code #trappedKeyEvent} to the receiver at specified

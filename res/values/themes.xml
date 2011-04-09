@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="Theme.Translucent.NoTitleBar" parent="@android:style/Theme.Translucent.NoTitleBar" />
+	<style name="Theme.Wallpaper.NoTitleBar" parent="@android:style/Theme.Wallpaper.NoTitleBar" />
+	<style name="Theme.Dialog" parent="@android:style/Theme.Dialog">
+		<item name="android:background">@android:color/background_dark</item>
+
+	</style>
+<style name="MediaButton" parent="@android:style/MediaButton">
+	<item name="android:background">@android:color/transparent</item>
+</style>
+ <style name="MediaButton.Next" parent="@android:style/MediaButton.Next">
+ </style>
+ <style name="MediaButton.Previous" parent="@android:style/MediaButton.Previous">
+ </style>
+ 
+ <style name="MediaButton.Play" parent="@android:style/MediaButton.Play">
+ </style>
+
+</resources>

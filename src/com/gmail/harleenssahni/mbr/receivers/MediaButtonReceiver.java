@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,10 +12,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.KeyEvent;
 
 import com.gmail.harleenssahni.mbr.Constants;
+import com.gmail.harleenssahni.mbr.MediaButtonList;
+import com.gmail.harleenssahni.mbr.MediaButtonListLocked;
 import com.gmail.harleenssahni.mbr.Utils;
 
 public class MediaButtonReceiver extends BroadcastReceiver {
@@ -99,11 +104,32 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                 abortBroadcast();
 
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                    // Figure out if keyguard is active
+                    KeyguardManager manager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+                    boolean locked = manager.inKeyguardRestrictedInputMode();
+
                     Intent showForwardView = new Intent(Constants.INTENT_ACTION_VIEW_MEDIA_BUTTON_LIST);
                     showForwardView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     showForwardView.putExtras(intent);
+                    showForwardView.setClassName(context, locked ? MediaButtonListLocked.class.getName()
+                            : MediaButtonList.class.getName());
+
                     Log.i(TAG, "MediaButtonReceiver starting selector activity for keyevent: " + keyEvent);
 
+                    if (locked) {
+
+                        // XXX See if this actually makes a difference
+                        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                        // acquire temp wake lock
+                        WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
+                                | PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, TAG);
+                        wakeLock.setReferenceCounted(false);
+
+                        // Our app better display within 5 seconds or we have
+                        // bigger issues.
+                        wakeLock.acquire(5000);
+
+                    }
                     context.startActivity(showForwardView);
 
                 }

@@ -2,4 +2,6 @@
 <resources>
     <string name="hello">Hello World, mbr!</string>
     <string name="app_name">MediaButtonRouter</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="disable_button">Disable</string>
 </resources>
