@@ -330,6 +330,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         if (wakeLock.isHeld()) {
             wakeLock.release();
         }
+        textToSpeech.stop();
         timeoutExecutor.shutdownNow();
         getPreferences(MODE_PRIVATE).edit().putInt(SELECTION_KEY, btButtonSelection).commit();
     }
