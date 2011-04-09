@@ -11,18 +11,38 @@ import android.view.KeyEvent;
 
 public final class Utils {
 
-    private static final String TAG = "com.gmail.harleenssahni.mbr.selector";
+    private static final String TAG = "MediaButtonRouter.Utils";
 
+    /**
+     * Prevent instantiation.
+     */
     private Utils() {
         // Intentionally blank
     }
 
+    /**
+     * Whether the keyCode represents a media button that we handle.
+     * 
+     * @param keyCode
+     * @return
+     */
     public static boolean isMediaButton(int keyCode) {
         return keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD || keyCode == KeyEvent.KEYCODE_MEDIA_NEXT
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS
                 || keyCode == KeyEvent.KEYCODE_MEDIA_REWIND || keyCode == KeyEvent.KEYCODE_MEDIA_STOP;
     }
 
+    /**
+     * Forwards {@code keyCode} to receiver specified as two key events, one for
+     * up and one for down. Optionally launches the application for the
+     * receiver.
+     * 
+     * @param context
+     * @param selectedReceiver
+     * @param launch
+     * @param keyCode
+     * @param cleanUpReceiver
+     */
     public static void forwardKeyCodeToComponent(Context context, ComponentName selectedReceiver, boolean launch,
             int keyCode, BroadcastReceiver cleanUpReceiver) {
 

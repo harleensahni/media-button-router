@@ -18,11 +18,12 @@ import com.gmail.harleenssahni.mbr.Constants;
 import com.gmail.harleenssahni.mbr.Utils;
 
 public class MediaButtonReceiver extends BroadcastReceiver {
-    private static final String TAG = "com.gmail.harleenssahni.mbr.receiver";
+    private static final String TAG = "MediaButtonRouter.Receiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        // TODO Handle the case where there is only 0 or 1 media receivers
+        // besides ourself by disabling our media receiver
         if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
             Log.i(TAG, "MediaButtonReceiver received media button intent: " + intent);
 
