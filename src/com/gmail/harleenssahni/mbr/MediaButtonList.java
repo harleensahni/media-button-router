@@ -342,8 +342,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // -- look into
         wakeLock = powerManager
                 .newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
-        wakeLock.setReferenceCounted(false); // We may release before the
-                                             // timeout
+        wakeLock.setReferenceCounted(false);
+
+        // FIXME The wakelock is too late here. We end up doing multiple
+        // resume/pause cycles (at least three) before the screen turns on and
+        // our app is stable (not flickering). What to do?
         wakeLock.acquire();
         timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
         resetTimeout();
