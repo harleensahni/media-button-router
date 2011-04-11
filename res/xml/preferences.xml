@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <CheckBoxPreference android:key="enable_receiver" android:title="Enable" android:defaultValue="true" android:summary="Check to have media button router handle media presses and forward to music apps"/>
+  
+</PreferenceScreen>
