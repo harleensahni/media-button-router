@@ -96,6 +96,12 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     private int btButtonSelection;
 
     /**
+     * Whether we've done the start up announcement to the user using the text
+     * to speech. Tracked so we don't repeat ourselves on orientation change.
+     */
+    private boolean announced;
+
+    /**
      * The power manager used to wake the device with a wake lock so that we can
      * handle input. Allows us to have a regular activity life cycle when media
      * buttons are pressed when and the screen is off.
@@ -179,7 +185,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // not clear that this will always get called. I don't know how else to
         // query if the text to speech is started though.
 
-        if (trappedKeyEvent != null) {
+        // Only annouce if we haven't before
+        if (!announced && trappedKeyEvent != null) {
             String actionText = "";
             switch (trappedKeyEvent.getKeyCode()) {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -208,6 +215,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 textToSpeak = "Select app to use for " + actionText;
             }
             textToSpeech.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            announced = true;
         }
     }
 
@@ -240,6 +248,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         receivers = getPackageManager().queryBroadcastReceivers(mediaButtonIntent,
                 PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER);
+
+        Boolean lastAnnounced = (Boolean) getLastNonConfigurationInstance();
+        if (lastAnnounced != null) {
+            announced = lastAnnounced;
+        }
 
         // Remove our app's receiver from the list so users can't select it.
         // NOTE: Our local receiver isn't registered at this point so we don't
@@ -424,6 +437,14 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         wakeLock.acquire();
         timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
         resetTimeout();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        return announced;
     }
 
     private void resetTimeout() {
