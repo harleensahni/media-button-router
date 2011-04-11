@@ -14,6 +14,7 @@ import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -27,6 +28,10 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_receiver", true)) {
+            return;
+        }
+
         // TODO Handle the case where there is only 0 or 1 media receivers
         // besides ourself by disabling our media receiver
         if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {

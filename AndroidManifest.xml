@@ -17,7 +17,7 @@
         <activity android:name=".MediaButtonList"
                  android:launchMode="singleInstance" android:excludeFromRecents="true"
                  android:theme="@style/Theme.Translucent.NoTitleBar"
-                 android:screenOrientation="portrait">
+                 >
             <intent-filter>
                 <action android:name="com.gmail.harleenssahni.VIEW_MEDIA_LIST" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -26,7 +26,7 @@
                 <activity android:name=".MediaButtonListLocked"
                  android:launchMode="singleInstance" android:excludeFromRecents="true"
                  android:theme="@style/Theme.Wallpaper.NoTitleBar"
-                 android:screenOrientation="portrait">
+                 >
             <intent-filter>
                 <action android:name="com.gmail.harleenssahni.VIEW_MEDIA_LIST" />
                 <category android:name="android.intent.category.DEFAULT" />
