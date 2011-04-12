@@ -547,6 +547,10 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             // wrap
             btButtonSelection = receivers.size() - 1;
         }
+
+        // May not highlight, but will scroll to item
+        getListView().setSelection(btButtonSelection);
+
         // todo scroll to item, highlight it
         textToSpeech.speak(getAppName(receivers.get(btButtonSelection)), TextToSpeech.QUEUE_FLUSH, null);
 
