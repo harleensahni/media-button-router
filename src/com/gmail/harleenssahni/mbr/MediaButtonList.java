@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -457,9 +459,9 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
                     @Override
                     public void run() {
-                        Log.d(TAG, "Timed out waiting for user interaction, finishing activity");
-                        finish();
+                        onTimeout();
                     }
+
                 });
 
             }
@@ -571,4 +573,22 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
     }
 
+    /**
+     * Takes appropriate action to notify user and dismiss activity on timeout.
+     */
+    private void onTimeout() {
+        Log.d(TAG, "Timed out waiting for user interaction, finishing activity");
+        final MediaPlayer timeoutPlayer = MediaPlayer.create(this, R.raw.dismiss);
+        timeoutPlayer.start();
+        // not having an on error listener results in on completion listener
+        // being called anyway
+        timeoutPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+            public void onCompletion(MediaPlayer mp) {
+                timeoutPlayer.release();
+            }
+        });
+
+        finish();
+    }
 }
