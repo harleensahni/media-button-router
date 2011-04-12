@@ -169,8 +169,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
     private View cancelButton;
 
-    private View disableButton;
-
     private ImageView mediaImage;
 
     private TextView header;
@@ -315,7 +313,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 finish();
             }
         });
-        disableButton = findViewById(R.id.disableButton);
         mediaImage = (ImageView) findViewById(R.id.mediaImage);
 
         Log.i(TAG, "Media button selector created.");
@@ -478,7 +475,9 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         super.onUserInteraction();
 
         // Reset timeout to finish
-        resetTimeout();
+        if (!timeoutExecutor.isShutdown()) {
+            resetTimeout();
+        }
     }
 
     //
