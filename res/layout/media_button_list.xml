@@ -10,7 +10,7 @@
 			<ImageView android:visibility="gone" android:id="@+id/mediaImage"
 				android:layout_width="wrap_content" style="@style/MediaButton.Play"
 				android:layout_height="wrap_content"></ImageView>
-			<TextView android:text="Media Button Router" android:id="@+id/dialogHeader"
+			<TextView android:text="@string/dialog_header" android:id="@+id/dialogHeader"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:layout_gravity="center_vertical"></TextView>
 		</LinearLayout>

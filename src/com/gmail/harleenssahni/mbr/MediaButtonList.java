@@ -69,7 +69,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     /**
      * Number of seconds to wait before timing out and just cancelling.
      */
-    private static final long TIMEOUT_TIME = 7;
+    private static final long TIMEOUT_TIME = 6;
 
     /**
      * The media button event that {@link MediaButtonReceiver} captured, and
@@ -117,6 +117,29 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     private WakeLock wakeLock;
 
     /**
+     * ScheduledExecutorService used to time out and close activity if the user
+     * doesn't make a selection within certain amount of time. Resets on user
+     * interaction.
+     */
+    private ScheduledExecutorService timeoutExecutor;
+
+    /**
+     * ScheduledFuture of timeout.
+     */
+    private ScheduledFuture<?> timeoutScheduledFuture;
+
+    /** The cancel button. */
+    private View cancelButton;
+
+    private ImageView mediaImage;
+
+    /** The header */
+    private TextView header;
+
+    /** The intro dialog. May be null if no dialog is being shown. */
+    private AlertDialog introDialog;
+
+    /**
      * Local broadcast receiver that allows us to handle media button events for
      * navigation inside the activity.
      */
@@ -158,26 +181,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     };
 
     /**
-     * ScheduledExecutorService used to time out and close activity if the user
-     * doesn't make a selection within certain amount of time. Resets on user
-     * interaction.
-     */
-    private ScheduledExecutorService timeoutExecutor;
-
-    /**
-     * ScheduledFuture of timeout.
-     */
-    private ScheduledFuture<?> timeoutScheduledFuture;
-
-    private View cancelButton;
-
-    private ImageView mediaImage;
-
-    private TextView header;
-
-    private AlertDialog introDialog;
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -196,25 +199,25 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 // the app shouldn't handle
                 // pause if music is already playing, it should go to whoever is
                 // playing the music.
-                actionText = "Play";
+                actionText = getString(R.string.play_speak_text);
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
-                actionText = "Next";
+                actionText = getString(R.string.next_speak_text);
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                actionText = "Previous";
+                actionText = getString(R.string.previous_speak_text);
                 break;
             case KeyEvent.KEYCODE_MEDIA_STOP:
-                actionText = "Stop";
+                actionText = getString(R.string.stop_speak_text);
                 break;
 
             }
             String textToSpeak = null;
             if (btButtonSelection > 0 && btButtonSelection < receivers.size()) {
-                textToSpeak = "Select app to use for " + actionText + ", currently "
-                        + getAppName(receivers.get(btButtonSelection));
+                textToSpeak = String.format(getString(R.string.application_announce_speak_text), actionText,
+                        getAppName(receivers.get(btButtonSelection)));
             } else {
-                textToSpeak = "Select app to use for " + actionText;
+                textToSpeak = String.format(getString(R.string.announce_speak_text), actionText);
             }
             textToSpeech.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
             announced = true;
@@ -283,7 +286,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
             @Override
             public long getItemId(int position) {
-                return 0;
+                return position;
             }
 
             @Override
@@ -395,20 +398,22 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             getListView().setFocusable(true);
             getListView().setFocusableInTouchMode(true);
 
+            String action = "";
             switch (trappedKeyEvent.getKeyCode()) {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                header.setText("Android Media Router: Play");
+                action = getString(R.string.play);
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
-                header.setText("Android Media Router: Next");
+                action = getString(R.string.next);
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                header.setText("Android Media Router: Previous");
+                action = getString(R.string.prev);
                 break;
             case KeyEvent.KEYCODE_MEDIA_STOP:
-                header.setText("Android Media Router: Stop");
+                action = getString(R.string.stop);
                 break;
             }
+            header.setText(String.format(getString(R.string.dialog_header_with_action), action));
 
         } else {
             Log.i(TAG, "Media button selector launched without key event, started with intent: " + getIntent());
@@ -434,10 +439,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK
                 | PowerManager.ON_AFTER_RELEASE, TAG);
         wakeLock.setReferenceCounted(false);
-
-        // FIXME The wakelock is too late here. We end up doing multiple
-        // resume/pause cycles (at least three) before the screen turns on and
-        // our app is stable (not flickering). What to do?
         wakeLock.acquire();
         timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
         if (introDialog == null) {
@@ -457,22 +458,22 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         return announced;
     }
 
+    /**
+     * Resets the timeout before the application is automatically dismissed.
+     */
     private void resetTimeout() {
         if (timeoutScheduledFuture != null) {
             timeoutScheduledFuture.cancel(false);
         }
 
-        // TODO Clean this up
         timeoutScheduledFuture = timeoutExecutor.schedule(new Runnable() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
-
                     @Override
                     public void run() {
                         onTimeout();
                     }
-
                 });
 
             }
@@ -492,17 +493,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             resetTimeout();
         }
     }
-
-    //
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // protected void onSaveInstanceState(Bundle outState) {
-    // super.onSaveInstanceState(outState);
-    // outState.putInt(SELECTION_KEY, btButtonSelection);
-    // Log.d(TAG, "Saving selection state, selected is " + btButtonSelection);
-    // }
 
     /**
      * Forwards the {@code #trappedKeyEvent} to the receiver at specified
@@ -564,7 +554,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // May not highlight, but will scroll to item
         getListView().setSelection(btButtonSelection);
 
-        // todo scroll to item, highlight it
         textToSpeech.speak(getAppName(receivers.get(btButtonSelection)), TextToSpeech.QUEUE_FLUSH, null);
 
     }
