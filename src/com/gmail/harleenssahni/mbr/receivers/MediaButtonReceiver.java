@@ -146,9 +146,9 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                                 | PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, TAG);
                         wakeLock.setReferenceCounted(false);
 
-                        // Our app better display within 5 seconds or we have
+                        // Our app better display within 3 seconds or we have
                         // bigger issues.
-                        wakeLock.acquire(5000);
+                        wakeLock.acquire(3000);
 
                     }
                     context.startActivity(showForwardView);

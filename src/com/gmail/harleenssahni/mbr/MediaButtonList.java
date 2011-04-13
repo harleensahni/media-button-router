@@ -13,12 +13,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -72,7 +74,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     /**
      * Number of seconds to wait before timing out and just cancelling.
      */
-    private static final long TIMEOUT_TIME = 6;
+    private int timeoutTime;
 
     /**
      * The media button event that {@link MediaButtonReceiver} captured, and
@@ -246,7 +248,14 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
         powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
-        // XXX Is mode private right? Will this result in the selection being
+        SharedPreferences preferenceManager = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // XXX can't use integer array, argh:
+        // http://code.google.com/p/android/issues/detail?id=2096
+        timeoutTime = Integer.valueOf(preferenceManager.getString(Constants.TIMEOUT_KEY, "5"));
+
+        // XXX Is mode private right? Will this result in the selection
+        // being
         // stored in different places for this
         // and MediaButtonListLocked
         // btButtonSelection = savedInstanceState != null ?
@@ -499,7 +508,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 });
 
             }
-        }, TIMEOUT_TIME, TimeUnit.SECONDS);
+        }, timeoutTime, TimeUnit.SECONDS);
 
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="timeout_speeds">
+        <item>Fast</item>
+        <item>Medium</item>
+        <item>Slow</item>
+    </string-array>
+    <!--  can't use integer-array in list preference as entryValues. issue 2096 -->
+    <string-array name="timeout_values">
+        <item>3</item>
+        <item>5</item>
+        <item>8</item>
+    </string-array>
+</resources>
