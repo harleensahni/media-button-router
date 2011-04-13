@@ -1,11 +1,23 @@
 package com.gmail.harleenssahni.mbr;
 
+import java.util.List;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -75,5 +87,39 @@ public final class Utils {
         context.sendOrderedBroadcast(mediaButtonDownIntent, null, cleanUpReceiver, null, Activity.RESULT_OK, null, null);
         context.sendOrderedBroadcast(mediaButtonUpIntent, null, cleanUpReceiver, null, Activity.RESULT_OK, null, null);
 
+    }
+
+    public static List<ResolveInfo> getMediaReceivers(PackageManager packageManager) {
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        return packageManager.queryBroadcastReceivers(mediaButtonIntent, PackageManager.GET_INTENT_FILTERS
+                | PackageManager.GET_RESOLVED_FILTER);
+    }
+
+    public static AlertDialog showIntroifNeccessary(Context context) {
+        final SharedPreferences preferenceManager = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!preferenceManager.getBoolean(Constants.INTRO_SHOWN_KEY, false)) {
+            // TextView textview = new TextView(context);
+            // textview.setText(context.getText(R.string.intro_text));
+            Spanned s = Html.fromHtml(context.getString(R.string.intro_text));
+            Builder alertDialog = new AlertDialog.Builder(context).setTitle("Introduction").setMessage(s);
+            alertDialog.setOnCancelListener(new OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+                    // preferenceManager.edit().putBoolean(Constants.INTRO_SHOWN_KEY,
+                    // true);
+                    Log.d(TAG, "Intro cancelled. will show again.");
+                }
+            });
+            alertDialog.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+
+                    preferenceManager.edit().putBoolean(Constants.INTRO_SHOWN_KEY, true).commit();
+
+                    Log.d(TAG, "Intro closed. Will not show again.");
+                }
+            });
+            return alertDialog.show();
+        }
+        return null;
     }
 }

@@ -10,4 +10,10 @@ public class MediaButtonConfigure extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Utils.showIntroifNeccessary(this);
+    }
 }

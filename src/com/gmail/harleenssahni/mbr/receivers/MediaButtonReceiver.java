@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.os.PowerManager;
@@ -28,9 +27,21 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("enable_receiver", true)) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.ENABLED_PREF_KEY, true)) {
             return;
         }
+
+        // Sometimes we take too long finish and Android kills
+        // us and forwards the intent to another broadcast receiver. If we're
+        // forwarding to another receiver,
+        // we can take as long as the time it took to determine the right
+        // receiver and then forward it two different intents for button down /
+        // up. This can cause some weird behavior where we actually do handle
+        // the event but get then someone else gets to too.
+        // May make this a preference for
+        // "aggressive"
+        // XXX
+        // / abortBroadcast();
 
         // TODO Handle the case where there is only 0 or 1 media receivers
         // besides ourself by disabling our media receiver
@@ -54,6 +65,9 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     // priority. If we could change priorities on app selection
                     // and have it stick,
                     // would probably be good enough to handle this.
+                    // One thing to do would be to add specific classes that
+                    // check for each knowhn app if our generic way doesn't work
+                    // well for them
                     Log.d(TAG, "MediaButtonReceiver may pass on event because music is already playing: " + keyEvent);
 
                     // Try to best guess who is playing the music based off of
@@ -65,9 +79,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     // it. Doing too much stuff here
                     List<RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-                    Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-                    List<ResolveInfo> receivers = context.getPackageManager().queryBroadcastReceivers(
-                            mediaButtonIntent, PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER);
+                    List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager());
 
                     // Remove our app from the list so users can't select it.
                     if (receivers != null) {
@@ -100,6 +112,9 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                                 break;
                             }
 
+                        }
+                        if (!matched) {
+                            Log.i(TAG, "No Receivers found playing music.");
                         }
                     }
 

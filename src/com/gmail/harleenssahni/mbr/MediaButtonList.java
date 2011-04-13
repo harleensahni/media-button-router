@@ -6,13 +6,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -175,6 +175,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
     private TextView header;
 
+    private AlertDialog introDialog;
+
     /**
      * {@inheritDoc}
      */
@@ -245,9 +247,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // savedInstanceState.getInt(SELECTION_KEY, -1) : -1;
         btButtonSelection = getPreferences(MODE_PRIVATE).getInt(SELECTION_KEY, -1);
 
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        receivers = getPackageManager().queryBroadcastReceivers(mediaButtonIntent,
-                PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER);
+        receivers = Utils.getMediaReceivers(getPackageManager());
 
         Boolean lastAnnounced = (Boolean) getLastNonConfigurationInstance();
         if (lastAnnounced != null) {
@@ -378,6 +378,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         super.onResume();
         Log.d(TAG, "onResume");
 
+        // Check to see if intro has been displayed before
+        if (introDialog == null || !introDialog.isShowing()) {
+            introDialog = Utils.showIntroifNeccessary(this);
+        }
+
         // TODO Clean this up, figure out which things need to be set on the
         // list view and which don't.
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Intent.EXTRA_KEY_EVENT) != null) {
@@ -435,7 +440,13 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // our app is stable (not flickering). What to do?
         wakeLock.acquire();
         timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
-        resetTimeout();
+        if (introDialog == null) {
+            // Don't time out in the middle of showing the dialog, that's rude.
+            // We could reset timeout here, but this is the first time the user
+            // is seeing the selection screen, so just let it stay till they
+            // dismiss.
+            resetTimeout();
+        }
     }
 
     /**
