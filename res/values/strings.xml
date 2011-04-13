@@ -17,4 +17,5 @@
     <string name="prev">Previous</string>
     <string name="stop">Stop</string>
     <string name="dialog_header">Media Button Router</string><string name="dialog_header_with_action">Media Button Router: %1$s</string>
+    <string name="menu_preferences">Preferences</string>
 </resources>

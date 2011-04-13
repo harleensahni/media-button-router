@@ -24,6 +24,9 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -456,6 +459,25 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     @Override
     public Object onRetainNonConfigurationInstance() {
         return announced;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.selector_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_settings) {
+            startActivity(new Intent(this, MediaButtonConfigure.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
