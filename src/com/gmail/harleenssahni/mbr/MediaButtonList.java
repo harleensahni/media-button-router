@@ -71,6 +71,12 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     private static final String SELECTION_KEY = "btButtonSelection";
 
     /**
+     * Key used to store and retrieve last selected receiver that actually was
+     * forwarded a media button by the user.
+     */
+    private static final String SELECTION_ACTED_KEY = "btButtonSelectionActed";
+
+    /**
      * Number of seconds to wait before timing out and just cancelling.
      */
     private int timeoutTime;
@@ -540,9 +546,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                         resolveInfo.activityInfo.name);
                 Utils.forwardKeyCodeToComponent(this, selectedReceiver, true, trappedKeyEvent.getKeyCode(),
                         new SweepBroadcastReceiver(selectedReceiver.toString()));
-
+                // save the last acted on app in case we have no idea who is
+                // playing music so we can make a guess
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                        .putString(SELECTION_ACTED_KEY, resolveInfo.activityInfo.name).commit();
                 finish();
-
             }
         }
     }
