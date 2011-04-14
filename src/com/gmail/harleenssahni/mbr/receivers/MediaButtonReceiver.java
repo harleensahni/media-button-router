@@ -1,5 +1,7 @@
 package com.gmail.harleenssahni.mbr.receivers;
 
+import static com.gmail.harleenssahni.mbr.Constants.TAG;
+
 import java.util.List;
 
 import android.app.ActivityManager;
@@ -23,7 +25,6 @@ import com.gmail.harleenssahni.mbr.MediaButtonListLocked;
 import com.gmail.harleenssahni.mbr.Utils;
 
 public class MediaButtonReceiver extends BroadcastReceiver {
-    private static final String TAG = "MediaButtonRouter.Receiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -46,14 +47,14 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         // TODO Handle the case where there is only 0 or 1 media receivers
         // besides ourself by disabling our media receiver
         if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-            Log.i(TAG, "MediaButtonReceiver received media button intent: " + intent);
+            Log.i(TAG, "Media Button Receiver: received media button intent: " + intent);
 
             KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
             int keyCode = keyEvent.getKeyCode();
 
             // Don't want to capture volume buttons
             if (Utils.isMediaButton(keyCode)) {
-                Log.i(TAG, "MediaButtonReceiver handling legitimate media key event: " + keyEvent);
+                Log.i(TAG, "Media Button Receiver: handling legitimate media key event: " + keyEvent);
 
                 AudioManager audioManager = ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE));
 
@@ -68,7 +69,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     // One thing to do would be to add specific classes that
                     // check for each knowhn app if our generic way doesn't work
                     // well for them
-                    Log.d(TAG, "MediaButtonReceiver may pass on event because music is already playing: " + keyEvent);
+                    Log.d(TAG, "Media Button Receiver: may pass on event because music is already playing: " + keyEvent);
 
                     // Try to best guess who is playing the music based off of
                     // running foreground services.
@@ -102,9 +103,8 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                                     }
                                     abortBroadcast();
                                     matched = true;
-                                    Log.i(TAG,
-                                            "MediaButtonReceiver passed on event because music is playing and service in same package as media key receiver was found to be active: "
-                                                    + keyEvent);
+                                    Log.i(TAG, "Media Button Receiver: Music playing and passed on event : " + keyEvent
+                                            + " to " + resolveInfo.activityInfo.name);
                                     break;
                                 }
                             }
@@ -114,7 +114,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
                         }
                         if (!matched) {
-                            Log.i(TAG, "No Receivers found playing music.");
+                            Log.i(TAG, "Media Button Receiver: No Receivers found playing music.");
                         }
                     }
 
@@ -134,7 +134,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                     showForwardView.setClassName(context, locked ? MediaButtonListLocked.class.getName()
                             : MediaButtonList.class.getName());
 
-                    Log.i(TAG, "MediaButtonReceiver starting selector activity for keyevent: " + keyEvent);
+                    Log.i(TAG, "Media Button Receiver: starting selector activity for keyevent: " + keyEvent);
 
                     if (locked) {
 

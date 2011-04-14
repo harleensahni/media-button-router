@@ -1,5 +1,7 @@
 package com.gmail.harleenssahni.mbr;
 
+import static com.gmail.harleenssahni.mbr.Constants.TAG;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -58,13 +60,10 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "After running broadcast receiver " + name + "have resultcode: " + getResultCode()
-                    + " result Data: " + getResultData());
+            Log.i(TAG, "Media Button Selector: After running broadcast receiver " + name + "have resultcode: "
+                    + getResultCode() + " result Data: " + getResultData());
         }
     }
-
-    /** Our tag for logging purposes and identification purposes. */
-    private static final String TAG = "MediaButtonRouter.Selector";
 
     /**
      * Key used to store and retrieve last selected receiver.
@@ -157,7 +156,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 KeyEvent navigationKeyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
                 int keyCode = navigationKeyEvent.getKeyCode();
                 if (Utils.isMediaButton(keyCode)) {
-                    Log.i(TAG, "Media Button Selector UI is directly handling key: " + navigationKeyEvent);
+                    Log.i(TAG, "Media Button Selector: UI is directly handling key: " + navigationKeyEvent);
                     if (navigationKeyEvent.getAction() == KeyEvent.ACTION_UP) {
                         switch (keyCode) {
                         case KeyEvent.KEYCODE_MEDIA_NEXT:
@@ -235,7 +234,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "On Create Called");
+        Log.d(TAG, "Media Button Selector: On Create Called");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.media_button_list);
 
@@ -332,7 +331,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         });
         mediaImage = (ImageView) findViewById(R.id.mediaImage);
 
-        Log.i(TAG, "Media button selector created.");
+        Log.i(TAG, "Media Button Selector: created.");
     }
 
     /**
@@ -343,7 +342,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         super.onDestroy();
         textToSpeech.shutdown();
 
-        Log.d(TAG, "Media button selector destroyed.");
+        Log.d(TAG, "Media Button Selector: destroyed.");
     }
 
     /**
@@ -361,8 +360,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
-        Log.d(TAG, "unegistered UI receiver");
+        Log.d(TAG, "Media Button Selector: onPause");
+        Log.d(TAG, "Media Button Selector: unegistered UI receiver");
         unregisterReceiver(uiMediaReceiver);
         if (wakeLock.isHeld()) {
             wakeLock.release();
@@ -376,7 +375,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     protected void onStart() {
 
         super.onStart();
-        Log.d(TAG, "On Start called");
+        Log.d(TAG, "Media Button Selector: On Start called");
 
         // TODO Originally thought most work should happen onResume and onPause.
         // I don't know if the onResume part is
@@ -391,7 +390,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "Media Button Selector: onResume");
 
         // Check to see if intro has been displayed before
         if (introDialog == null || !introDialog.isShowing()) {
@@ -403,7 +402,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Intent.EXTRA_KEY_EVENT) != null) {
             trappedKeyEvent = (KeyEvent) getIntent().getExtras().get(Intent.EXTRA_KEY_EVENT);
 
-            Log.i(TAG, "Media button selector handling event: " + trappedKeyEvent + " from intent:" + getIntent());
+            Log.i(TAG, "Media Button Selector: handling event: " + trappedKeyEvent + " from intent:" + getIntent());
 
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             getListView().setClickable(true);
@@ -428,7 +427,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             header.setText(String.format(getString(R.string.dialog_header_with_action), action));
 
         } else {
-            Log.i(TAG, "Media button selector launched without key event, started with intent: " + getIntent());
+            Log.i(TAG, "Media Button Selector: launched without key event, started with intent: " + getIntent());
 
             trappedKeyEvent = null;
             getListView().setClickable(false);
@@ -437,7 +436,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             getListView().setFocusableInTouchMode(false);
 
         }
-        Log.d(TAG, "Registered UI receiver");
+        Log.d(TAG, "Media Button Selector: Registered UI receiver");
         registerReceiver(uiMediaReceiver, uiIntentFilter);
 
         // power on device's screen so we can interact with it, otherwise on
@@ -608,7 +607,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
      * Takes appropriate action to notify user and dismiss activity on timeout.
      */
     private void onTimeout() {
-        Log.d(TAG, "Timed out waiting for user interaction, finishing activity");
+        Log.d(TAG, "Media Button Selector: Timed out waiting for user interaction, finishing activity");
         final MediaPlayer timeoutPlayer = MediaPlayer.create(this, R.raw.dismiss);
         timeoutPlayer.start();
         // not having an on error listener results in on completion listener
