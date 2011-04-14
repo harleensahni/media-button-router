@@ -2,6 +2,7 @@ package com.gmail.harleenssahni.mbr.receivers;
 
 import static com.gmail.harleenssahni.mbr.Constants.TAG;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActivityManager;
@@ -11,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.os.PowerManager;
@@ -28,7 +30,9 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.ENABLED_PREF_KEY, true)) {
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
             return;
         }
 
@@ -78,12 +82,22 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
                     // XXX Move stuff like receivers to service so we can cache
                     // it. Doing too much stuff here
-                    List<RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
-
                     List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager());
 
                     // Remove our app from the list so users can't select it.
                     if (receivers != null) {
+
+                        List<RunningServiceInfo> runningServices = activityManager
+                                .getRunningServices(Integer.MAX_VALUE);
+                        // Only need to look at services that are foreground
+                        // and started
+                        List<RunningServiceInfo> candidateServices = new ArrayList<ActivityManager.RunningServiceInfo>();
+                        for (RunningServiceInfo runningService : runningServices) {
+                            if (runningService.started && runningService.foreground) {
+                                candidateServices.add(runningService);
+                            }
+                        }
+
                         boolean matched = false;
                         for (ResolveInfo resolveInfo : receivers) {
                             if (MediaButtonReceiver.class.getName().equals(resolveInfo.activityInfo.name)) {
@@ -91,10 +105,10 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                             }
                             // Find any service that's package matches that of a
                             // receivers.
-                            for (RunningServiceInfo runningService : runningServices) {
-                                if (runningService.foreground
-                                        && runningService.started
-                                        && resolveInfo.activityInfo.packageName.equals(runningService.service
+                            for (RunningServiceInfo candidateService : candidateServices) {
+                                if (candidateService.foreground
+                                        && candidateService.started
+                                        && resolveInfo.activityInfo.packageName.equals(candidateService.service
                                                 .getPackageName())) {
                                     if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
                                         Utils.forwardKeyCodeToComponent(context, new ComponentName(
@@ -114,48 +128,64 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
                         }
                         if (!matched) {
-                            Log.i(TAG, "Media Button Receiver: No Receivers found playing music.");
+                            if (preferences.getBoolean(Constants.CONSERVATIVE_PREF_KEY, false)) {
+                                abortBroadcast();
+                                Log.i(TAG,
+                                        "Media Button Receiver: No Receivers found playing music. Intent broadcast will be aborted.");
+                                if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+                                    showSelector(context, intent, keyEvent);
+                                }
+
+                            } else {
+                                Log.i(TAG,
+                                        "Media Button Receiver: No Receivers found playing music. Intent will use regular priorities.");
+                            }
                         }
                     }
 
                     return;
                 }
 
+                // No music playing
                 abortBroadcast();
 
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     // Figure out if keyguard is active
-                    KeyguardManager manager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
-                    boolean locked = manager.inKeyguardRestrictedInputMode();
-
-                    Intent showForwardView = new Intent(Constants.INTENT_ACTION_VIEW_MEDIA_BUTTON_LIST);
-                    showForwardView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    showForwardView.putExtras(intent);
-                    showForwardView.setClassName(context, locked ? MediaButtonListLocked.class.getName()
-                            : MediaButtonList.class.getName());
-
-                    Log.i(TAG, "Media Button Receiver: starting selector activity for keyevent: " + keyEvent);
-
-                    if (locked) {
-
-                        // XXX See if this actually makes a difference, might
-                        // not be needed if we move more things to onCreate?
-                        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-                        // acquire temp wake lock
-                        WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
-                                | PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, TAG);
-                        wakeLock.setReferenceCounted(false);
-
-                        // Our app better display within 3 seconds or we have
-                        // bigger issues.
-                        wakeLock.acquire(3000);
-
-                    }
-                    context.startActivity(showForwardView);
+                    showSelector(context, intent, keyEvent);
 
                 }
             }
 
         }
+    }
+
+    private void showSelector(Context context, Intent intent, KeyEvent keyEvent) {
+        KeyguardManager manager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        boolean locked = manager.inKeyguardRestrictedInputMode();
+
+        Intent showForwardView = new Intent(Constants.INTENT_ACTION_VIEW_MEDIA_BUTTON_LIST);
+        showForwardView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        showForwardView.putExtras(intent);
+        showForwardView.setClassName(context,
+                locked ? MediaButtonListLocked.class.getName() : MediaButtonList.class.getName());
+
+        Log.i(TAG, "Media Button Receiver: starting selector activity for keyevent: " + keyEvent);
+
+        if (locked) {
+
+            // XXX See if this actually makes a difference, might
+            // not be needed if we move more things to onCreate?
+            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            // acquire temp wake lock
+            WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
+                    | PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, TAG);
+            wakeLock.setReferenceCounted(false);
+
+            // Our app better display within 3 seconds or we have
+            // bigger issues.
+            wakeLock.acquire(3000);
+
+        }
+        context.startActivity(showForwardView);
     }
 }

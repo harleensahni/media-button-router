@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ import com.gmail.harleenssahni.mbr.receivers.MediaButtonReceiver;
  * 
  * @author harleenssahni@gmail.com
  */
-public class MediaButtonList extends ListActivity implements OnInitListener {
+public class MediaButtonList extends ListActivity implements OnInitListener, AudioManager.OnAudioFocusChangeListener {
 
     private class SweepBroadcastReceiver extends BroadcastReceiver {
         String name;
@@ -127,6 +128,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
     private WakeLock wakeLock;
 
     /**
+     * Whether we've requested audio focus.
+     */
+    private boolean audioFocus;
+
+    /**
      * ScheduledExecutorService used to time out and close activity if the user
      * doesn't make a selection within certain amount of time. Resets on user
      * interaction.
@@ -190,6 +196,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         }
     };
 
+    private AudioManager audioManager;
+
     /**
      * {@inheritDoc}
      */
@@ -202,6 +210,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
 
         // Only annouce if we haven't before
         if (!announced && trappedKeyEvent != null) {
+            requestAudioFocus();
+
             String actionText = "";
             switch (trappedKeyEvent.getKeyCode()) {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
@@ -209,7 +219,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
                 // the app shouldn't handle
                 // pause if music is already playing, it should go to whoever is
                 // playing the music.
-                actionText = getString(R.string.play_speak_text);
+                actionText = getString(audioManager.isMusicActive() ? R.string.pause_play_speak_text
+                        : R.string.play_speak_text);
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 actionText = getString(R.string.next_speak_text);
@@ -251,13 +262,14 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // developer guide
         textToSpeech = new TextToSpeech(this, this);
 
+        audioManager = (AudioManager) this.getSystemService(AUDIO_SERVICE);
         powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
-        SharedPreferences preferenceManager = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // XXX can't use integer array, argh:
         // http://code.google.com/p/android/issues/detail?id=2096
-        timeoutTime = Integer.valueOf(preferenceManager.getString(Constants.TIMEOUT_KEY, "5"));
+        timeoutTime = Integer.valueOf(preferences.getString(Constants.TIMEOUT_KEY, "5"));
 
         // XXX Is mode private right? Will this result in the selection
         // being
@@ -265,7 +277,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         // and MediaButtonListLocked
         // btButtonSelection = savedInstanceState != null ?
         // savedInstanceState.getInt(SELECTION_KEY, -1) : -1;
-        btButtonSelection = getPreferences(MODE_PRIVATE).getInt(SELECTION_KEY, -1);
+        btButtonSelection = preferences.getInt(SELECTION_KEY, -1);
 
         receivers = Utils.getMediaReceivers(getPackageManager());
 
@@ -374,7 +386,8 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         }
         textToSpeech.stop();
         timeoutExecutor.shutdownNow();
-        getPreferences(MODE_PRIVATE).edit().putInt(SELECTION_KEY, btButtonSelection).commit();
+        audioManager.abandonAudioFocus(this);
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTION_KEY, btButtonSelection).commit();
     }
 
     @Override
@@ -402,7 +415,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         if (introDialog == null || !introDialog.isShowing()) {
             introDialog = Utils.showIntroifNeccessary(this);
         }
-
+        requestAudioFocus();
         // TODO Clean this up, figure out which things need to be set on the
         // list view and which don't.
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Intent.EXTRA_KEY_EVENT) != null) {
@@ -418,7 +431,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
             String action = "";
             switch (trappedKeyEvent.getKeyCode()) {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                action = getString(R.string.play);
+                action = getString(audioManager.isMusicActive() ? R.string.pausePlay : R.string.play);
                 break;
             case KeyEvent.KEYCODE_MEDIA_NEXT:
                 action = getString(R.string.next);
@@ -628,5 +641,18 @@ public class MediaButtonList extends ListActivity implements OnInitListener {
         });
 
         finish();
+    }
+
+    private void requestAudioFocus() {
+        if (!audioFocus) {
+            audioFocus = audioManager.requestAudioFocus(this, AudioManager.STREAM_NOTIFICATION,
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+        }
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        // TODO Auto-generated method stub
+
     }
 }

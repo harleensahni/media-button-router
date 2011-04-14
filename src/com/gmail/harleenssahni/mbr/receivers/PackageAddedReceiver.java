@@ -8,7 +8,9 @@ public class PackageAddedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        // ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE))
+        // .registerMediaButtonEventReceiver(new ComponentName(context,
+        // MediaButtonReceiver.class));
     }
 
 }

@@ -5,6 +5,7 @@
     <string name="disable_button">Disable</string>
     <string name="intro_text">Use your bluetooth device to select which app you want to use to play music! &lt;p&gt;Simply hit &lt;i&gt;next&lt;/i&gt;, &lt;i&gt;previous&lt;/i&gt;, or &lt;i&gt;play&lt;/i&gt; on your bluetooth device. Media router will pop up and ask you what application you want to handle the action. You can select using your phone &lt;b&gt;OR&lt;/b&gt; or you can navigate through the list using the &lt;i&gt;next&lt;/i&gt; and &lt;i&gt;previous&lt;/i&gt; buttons on your bluetooth device. Android Media Router will speak what is currently selected. When you find the app you want, simply hit &lt;i&gt;play&lt;/i&gt; to foward the action to that application. &lt;p&gt;If music is already playing, Media Button Router stays out of the way, and lets whatever app is playing music handle pauses, previous, and next. &lt;p&gt; You &lt;b&gt;must&lt;/b&gt; enable whatever handle headset preference your music apps have.&lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; There will be some apps that this will just not work well with.  Try finding replacements if you want to use this application. &lt;p&gt;If you are a developer, please feel free to contribute :)</string>
     <string name="play_speak_text">Play</string>
+    <string name="pause_play_speak_text">Pause or Play</string>
     <string name="next_speak_text">Next</string>
     <string name="previous_speak_text">Previous</string>
     <string name="stop_speak_text">Stop</string>
@@ -13,10 +14,15 @@
     <string name="pref_enable_title">Enable</string>
     <string name="pref_enable_summary">Check to have media button router handle media presses and forward to music apps</string>
     <string name="play">Play</string>
+    <string name="pausePlay">Play/Pause</string>
     <string name="next">Next</string>
     <string name="prev">Previous</string>
     <string name="stop">Stop</string>
-    <string name="dialog_header">Media Button Router</string><string name="dialog_header_with_action">Media Button Router: %1$s</string>
+    <string name="dialog_header">Media Button Router</string>
+    <string name="dialog_header_with_action">Media Button Router: %1$s</string>
     <string name="menu_preferences">Preferences</string>
-    <string name="pref_timeout_summary">How fast or slow the  selector disappears after no user interaction.</string><string name="pref_timeout_title">Timeout Speed</string>
+    <string name="pref_timeout_summary">How fast or slow the  selector disappears after no user interaction.</string>
+    <string name="pref_timeout_title">Timeout Speed</string>
+    <string name="pref_conservative_summary">Be conservative about guessing which app is playing music. If can\'t make a good guess, prompt with the selector dialog.</string>
+    <string name="pref_conservative_title">Conservative</string>
 </resources>

@@ -11,4 +11,5 @@ public class Constants {
     public static final String ENABLED_PREF_KEY = "enable_receiver";
     public static final String INTRO_SHOWN_KEY = "intro_shown";
     public static final String TIMEOUT_KEY = "timeout";
+    public static final String CONSERVATIVE_PREF_KEY = "conservative";
 }
