@@ -14,7 +14,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MediaButtonList"
+        <activity android:name=".ReceiverSelector"
                  android:launchMode="singleInstance" android:excludeFromRecents="true"
                  android:theme="@style/Theme.Translucent.NoTitleBar"
                  >
@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-                <activity android:name=".MediaButtonListLocked"
+                <activity android:name=".ReceiverSelectorLocked"
                  android:launchMode="singleInstance" android:excludeFromRecents="true"
                  android:theme="@style/Theme.Wallpaper.NoTitleBar"
                  >

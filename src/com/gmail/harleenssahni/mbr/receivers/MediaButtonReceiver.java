@@ -22,8 +22,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 import com.gmail.harleenssahni.mbr.Constants;
-import com.gmail.harleenssahni.mbr.MediaButtonList;
-import com.gmail.harleenssahni.mbr.MediaButtonListLocked;
+import com.gmail.harleenssahni.mbr.ReceiverSelector;
+import com.gmail.harleenssahni.mbr.ReceiverSelectorLocked;
 import com.gmail.harleenssahni.mbr.Utils;
 
 public class MediaButtonReceiver extends BroadcastReceiver {
@@ -167,7 +167,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         showForwardView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         showForwardView.putExtras(intent);
         showForwardView.setClassName(context,
-                locked ? MediaButtonListLocked.class.getName() : MediaButtonList.class.getName());
+                locked ? ReceiverSelectorLocked.class.getName() : ReceiverSelector.class.getName());
 
         Log.i(TAG, "Media Button Receiver: starting selector activity for keyevent: " + keyEvent);
 

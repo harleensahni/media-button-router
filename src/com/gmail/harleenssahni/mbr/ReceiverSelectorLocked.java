@@ -5,6 +5,6 @@ package com.gmail.harleenssahni.mbr;
  * 
  * @author harleenssahni@gmail.com
  */
-public class MediaButtonListLocked extends MediaButtonList {
+public class ReceiverSelectorLocked extends ReceiverSelector {
     // Intentionally blank
 }

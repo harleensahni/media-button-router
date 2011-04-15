@@ -50,7 +50,7 @@ import com.gmail.harleenssahni.mbr.receivers.MediaButtonReceiver;
  * 
  * @author harleenssahni@gmail.com
  */
-public class MediaButtonList extends ListActivity implements OnInitListener, AudioManager.OnAudioFocusChangeListener {
+public class ReceiverSelector extends ListActivity implements OnInitListener, AudioManager.OnAudioFocusChangeListener {
 
     private class SweepBroadcastReceiver extends BroadcastReceiver {
         String name;
