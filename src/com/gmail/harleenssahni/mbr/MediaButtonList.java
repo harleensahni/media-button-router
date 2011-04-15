@@ -271,12 +271,6 @@ public class MediaButtonList extends ListActivity implements OnInitListener, Aud
         // http://code.google.com/p/android/issues/detail?id=2096
         timeoutTime = Integer.valueOf(preferences.getString(Constants.TIMEOUT_KEY, "5"));
 
-        // XXX Is mode private right? Will this result in the selection
-        // being
-        // stored in different places for this
-        // and MediaButtonListLocked
-        // btButtonSelection = savedInstanceState != null ?
-        // savedInstanceState.getInt(SELECTION_KEY, -1) : -1;
         btButtonSelection = preferences.getInt(SELECTION_KEY, -1);
 
         receivers = Utils.getMediaReceivers(getPackageManager());
@@ -493,6 +487,11 @@ public class MediaButtonList extends ListActivity implements OnInitListener, Aud
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // We're not supposed to show a menu since we show as a dialog,
+        // according to google's ui guidelines. No other sane place to put this,
+        // except maybe
+        // a small configure button in the dialog header, but don't want users
+        // to hit it by accident when selecting music app.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.selector_menu, menu);
         return true;
@@ -537,7 +536,7 @@ public class MediaButtonList extends ListActivity implements OnInitListener, Aud
     public void onUserInteraction() {
         super.onUserInteraction();
 
-        // Reset timeout to finish
+        // Reset timeout before we finish
         if (!timeoutExecutor.isShutdown()) {
             resetTimeout();
         }
@@ -643,6 +642,9 @@ public class MediaButtonList extends ListActivity implements OnInitListener, Aud
         finish();
     }
 
+    /**
+     * Requests audio focus if necessary.
+     */
     private void requestAudioFocus() {
         if (!audioFocus) {
             audioFocus = audioManager.requestAudioFocus(this, AudioManager.STREAM_NOTIFICATION,
