@@ -26,6 +26,11 @@ import com.gmail.harleenssahni.mbr.ReceiverSelector;
 import com.gmail.harleenssahni.mbr.ReceiverSelectorLocked;
 import com.gmail.harleenssahni.mbr.Utils;
 
+/**
+ * Handles routing media button intents to application that is playing music
+ * 
+ * @author harleenssahni@gmail.com
+ */
 public class MediaButtonReceiver extends BroadcastReceiver {
 
     @Override
@@ -37,16 +42,9 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         }
 
         // Sometimes we take too long finish and Android kills
-        // us and forwards the intent to another broadcast receiver. If we're
-        // forwarding to another receiver,
-        // we can take as long as the time it took to determine the right
-        // receiver and then forward it two different intents for button down /
-        // up. This can cause some weird behavior where we actually do handle
-        // the event but get then someone else gets to too.
-        // May make this a preference for
-        // "aggressive"
-        // XXX
-        // / abortBroadcast();
+        // us and forwards the intent to another broadcast receiver. If this
+        // keeps being a problem, than we should always return immediately and
+        // handle forwarding the intent in another thread
 
         // TODO Handle the case where there is only 0 or 1 media receivers
         // besides ourself by disabling our media receiver
@@ -103,6 +101,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                             if (MediaButtonReceiver.class.getName().equals(resolveInfo.activityInfo.name)) {
                                 continue;
                             }
+
                             // Find any service that's package matches that of a
                             // receivers.
                             for (RunningServiceInfo candidateService : candidateServices) {
@@ -123,9 +122,10 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                                 }
                             }
                             if (matched) {
+                                // TODO Need to handle case with multiple
+                                // matches, maybe by showing selector
                                 break;
                             }
-
                         }
                         if (!matched) {
                             if (preferences.getBoolean(Constants.CONSERVATIVE_PREF_KEY, false)) {
@@ -152,13 +152,23 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     // Figure out if keyguard is active
                     showSelector(context, intent, keyEvent);
-
                 }
             }
 
         }
     }
 
+    /**
+     * Shows the selector dialog that allows the user to decide which music
+     * player should receiver the media button press intent.
+     * 
+     * @param context
+     *            The context.
+     * @param intent
+     *            The intent to forward.
+     * @param keyEvent
+     *            The key event
+     */
     private void showSelector(Context context, Intent intent, KeyEvent keyEvent) {
         KeyguardManager manager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean locked = manager.inKeyguardRestrictedInputMode();
@@ -184,7 +194,6 @@ public class MediaButtonReceiver extends BroadcastReceiver {
             // Our app better display within 3 seconds or we have
             // bigger issues.
             wakeLock.acquire(3000);
-
         }
         context.startActivity(showForwardView);
     }
