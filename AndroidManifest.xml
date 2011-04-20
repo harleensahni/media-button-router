@@ -57,6 +57,7 @@
 				<action android:name="android.intent.action.MEDIA_BUTTON"/>
 			</intent-filter>
 		</receiver>
+		<!--
 		<receiver android:name = ".receivers.BootReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -72,10 +73,12 @@
 				<action android:name="android.intent.action.PACKAGE_REMOVED"/>
 			</intent-filter>
 		</receiver>
-
+		-->
     </application>
+    <!-- 
     <uses-permission android:name = "android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name = "android.permission.BROADCAST_PACKAGE_REMOVED"/>
+    -->
     <uses-permission android:name = "android.permission.WAKE_LOCK"/>
     
 </manifest>
