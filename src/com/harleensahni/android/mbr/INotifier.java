@@ -19,7 +19,7 @@ package com.harleensahni.android.mbr;
  * Announces to the user the triggering media action and selections as they
  * navigate the activity's UI.
  * 
- * @author harleenssahni@gmail.com
+ * @author Harleen Sahni
  * 
  */
 public interface INotifier {

@@ -20,7 +20,7 @@ import android.view.Menu;
 /**
  * Allows us to display on lock screen.
  * 
- * @author harleenssahni@gmail.com
+ * @author Harleen Sahni
  */
 public class ReceiverSelectorLocked extends ReceiverSelector {
     @Override

@@ -19,7 +19,7 @@ import android.app.IntentService;
 import android.content.Intent;
 
 /**
- * @author harleenssahni@gmail.com
+ * @author Harleen Sahni
  * 
  */
 public class MediaButtonUIService extends IntentService {

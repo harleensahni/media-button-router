@@ -44,7 +44,7 @@ import com.harleensahni.android.mbr.Utils;
 /**
  * Handles routing media button intents to application that is playing music
  * 
- * @author harleenssahni@gmail.com
+ * @author Harleen Sahni
  */
 public class MediaButtonReceiver extends BroadcastReceiver {
 

@@ -63,7 +63,7 @@ import com.harleensahni.android.mbr.receivers.MediaButtonReceiver;
  * press. Can be navigated via touch screen or media button keys. Provides voice
  * feedback.
  * 
- * @author harleenssahni@gmail.com
+ * @author Harleen Sahni
  */
 public class ReceiverSelector extends ListActivity implements OnInitListener, AudioManager.OnAudioFocusChangeListener {
 
