@@ -170,6 +170,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
     /** The intro dialog. May be null if no dialog is being shown. */
     private AlertDialog introDialog;
 
+    private boolean eulaAcceptedAlready;
+
     /**
      * Local broadcast receiver that allows us to handle media button events for
      * navigation inside the activity.
@@ -269,6 +271,9 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         Log.d(TAG, "Media Button Selector: On Create Called");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.media_button_list);
+
+        // Show eula
+        eulaAcceptedAlready = Eula.show(this);
 
         uiIntentFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
         uiIntentFilter.setPriority(Integer.MAX_VALUE);
@@ -480,7 +485,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire();
         timeoutExecutor = Executors.newSingleThreadScheduledExecutor();
-        if (introDialog == null) {
+        if (introDialog == null && eulaAcceptedAlready) {
             // Don't time out in the middle of showing the dialog, that's rude.
             // We could reset timeout here, but this is the first time the user
             // is seeing the selection screen, so just let it stay till they

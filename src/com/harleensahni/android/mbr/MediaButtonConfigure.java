@@ -24,6 +24,7 @@ public class MediaButtonConfigure extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        Eula.show(this);
     }
 
     @Override

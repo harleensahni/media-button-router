@@ -25,4 +25,7 @@
     <string name="pref_timeout_title">Timeout Speed</string>
     <string name="pref_conservative_summary">Be conservative about guessing which app is playing music. If can\'t make a good guess, prompt with the selector dialog.</string>
     <string name="pref_conservative_title">Conservative</string>
+    <string name="eula_title">EULA</string>
+    <string name="eula_accept">Accept</string>
+    <string name="eula_refuse">Refuse</string>
 </resources>
