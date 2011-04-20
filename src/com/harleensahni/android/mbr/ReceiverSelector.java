@@ -1,6 +1,6 @@
-package com.gmail.harleenssahni.mbr;
+package com.harleensahni.android.mbr;
 
-import static com.gmail.harleenssahni.mbr.Constants.TAG;
+import static com.harleensahni.android.mbr.Constants.TAG;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -41,7 +41,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.gmail.harleenssahni.mbr.receivers.MediaButtonReceiver;
+import com.harleensahni.android.mbr.receivers.MediaButtonReceiver;
 
 /**
  * Allows the user to choose which media receiver will handle a media button

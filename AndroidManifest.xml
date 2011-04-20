@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.gmail.harleenssahni.mbr"
+      package="com.harleensahni.android.mbr"
       android:versionCode="1"
       android:versionName="1.0">
 
@@ -19,7 +19,7 @@
                  android:theme="@style/Theme.Translucent.NoTitleBar"
                  >
             <intent-filter>
-                <action android:name="com.gmail.harleenssahni.VIEW_MEDIA_LIST" />
+                <action android:name="com.harleensahni.android.VIEW_MEDIA_LIST" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -28,7 +28,7 @@
                  android:theme="@style/Theme.Wallpaper.NoTitleBar"
                  >
             <intent-filter>
-                <action android:name="com.gmail.harleenssahni.VIEW_MEDIA_LIST" />
+                <action android:name="com.harleensahni.android.VIEW_MEDIA_LIST" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

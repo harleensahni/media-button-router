@@ -1,4 +1,4 @@
-package com.gmail.harleenssahni.mbr;
+package com.harleensahni.android.mbr;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import android.view.KeyEvent;
 
 public final class Utils {
 
-    private static final String TAG = "MediaButtonRouter.Utils";
+    private static final String TAG = "MediaButtonRouter";
 
     /**
      * Prevent instantiation.

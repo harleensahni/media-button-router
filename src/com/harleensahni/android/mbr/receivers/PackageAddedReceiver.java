@@ -1,4 +1,4 @@
-package com.gmail.harleenssahni.mbr.receivers;
+package com.harleensahni.android.mbr.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

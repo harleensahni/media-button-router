@@ -1,4 +1,4 @@
-package com.gmail.harleenssahni.mbr;
+package com.harleensahni.android.mbr;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

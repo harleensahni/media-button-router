@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.gmail.harleenssahni.mbr;
+package com.harleensahni.android.mbr;
 
 /**
  * Announces to the user the triggering media action and selections as they

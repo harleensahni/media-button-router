@@ -1,6 +1,6 @@
-package com.gmail.harleenssahni.mbr.receivers;
+package com.harleensahni.android.mbr.receivers;
 
-import static com.gmail.harleenssahni.mbr.Constants.TAG;
+import static com.harleensahni.android.mbr.Constants.TAG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import com.gmail.harleenssahni.mbr.Constants;
-import com.gmail.harleenssahni.mbr.ReceiverSelector;
-import com.gmail.harleenssahni.mbr.ReceiverSelectorLocked;
-import com.gmail.harleenssahni.mbr.Utils;
+import com.harleensahni.android.mbr.Constants;
+import com.harleensahni.android.mbr.ReceiverSelector;
+import com.harleensahni.android.mbr.ReceiverSelectorLocked;
+import com.harleensahni.android.mbr.Utils;
 
 /**
  * Handles routing media button intents to application that is playing music
@@ -150,7 +150,6 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                 abortBroadcast();
 
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                    // Figure out if keyguard is active
                     showSelector(context, intent, keyEvent);
                 }
             }
