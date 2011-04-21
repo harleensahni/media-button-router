@@ -251,7 +251,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
 
             }
             String textToSpeak = null;
-            if (btButtonSelection > 0 && btButtonSelection < receivers.size()) {
+            if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
                 textToSpeak = String.format(getString(R.string.application_announce_speak_text), actionText,
                         getAppName(receivers.get(btButtonSelection)));
             } else {
