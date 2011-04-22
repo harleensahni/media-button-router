@@ -36,6 +36,11 @@ import android.text.Spanned;
 import android.util.Log;
 import android.view.KeyEvent;
 
+/**
+ * Utility class.
+ * 
+ * @author Harleen Sahni
+ */
 public final class Utils {
 
     private static final String TAG = "MediaButtonRouter";

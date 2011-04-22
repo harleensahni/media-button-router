@@ -18,8 +18,17 @@ package com.harleensahni.android.mbr;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
+/**
+ * Settings activity for Media Button Router. This is the activity that the user
+ * will launch if they pick our app from their app launcher.
+ * 
+ * @author Harleen Sahni
+ */
 public class MediaButtonConfigure extends PreferenceActivity {
-    /** Called when the activity is first created. */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +36,9 @@ public class MediaButtonConfigure extends PreferenceActivity {
         Eula.show(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onResume() {
         super.onResume();

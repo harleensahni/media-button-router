@@ -15,6 +15,11 @@
  */
 package com.harleensahni.android.mbr;
 
+/**
+ * Constants.
+ * 
+ * @author Harleen Sahni
+ */
 public class Constants {
 
     private Constants() {
