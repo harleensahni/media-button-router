@@ -98,7 +98,11 @@ public final class Utils {
         // receivers won't do anything with the intents unless the
         // application is open. (This this is only if the app isn't
         // playing music and you want it to play music now)
-        // XXX Is this true? recheck..
+        // XXX Is that true? recheck..
+        // Another reason to launch the app is that if the app does
+        // AudioManager#registerMediaButtonEventReceiver
+        // on load, and we are unable to tell when this app is playing music,
+        // android's default behavior should be correct.
         if (launch) {
             context.startActivity(context.getPackageManager().getLaunchIntentForPackage(
                     selectedReceiver.getPackageName()));
