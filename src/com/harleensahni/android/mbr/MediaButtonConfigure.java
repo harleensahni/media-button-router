@@ -15,8 +15,12 @@
  */
 package com.harleensahni.android.mbr;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.speech.tts.TextToSpeech;
 
 /**
  * Settings activity for Media Button Router. This is the activity that the user
@@ -26,6 +30,8 @@ import android.preference.PreferenceActivity;
  */
 public class MediaButtonConfigure extends PreferenceActivity {
 
+    private static final int TEXT_TO_SPEECH_CHECK_CODE = 123;
+
     /**
      * {@inheritDoc}
      */
@@ -34,14 +40,38 @@ public class MediaButtonConfigure extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         Eula.show(this);
+        Utils.showIntroifNeccessary(this);
+
+        Intent checkIntent = new Intent();
+        checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, TEXT_TO_SPEECH_CHECK_CODE);
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void onResume() {
-        super.onResume();
-        Utils.showIntroifNeccessary(this);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == TEXT_TO_SPEECH_CHECK_CODE) {
+            Preference ttsWarningPreference = findPreference("tts_warning");
+
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                ttsWarningPreference.setEnabled(false);
+            } else {
+                ttsWarningPreference.setEnabled(true);
+                ttsWarningPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+                    public boolean onPreferenceClick(Preference preference) {
+                        Intent installIntent = new Intent();
+                        installIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                        startActivity(installIntent);
+                        return true;
+                    }
+                });
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

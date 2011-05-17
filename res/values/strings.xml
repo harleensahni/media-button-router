@@ -28,4 +28,6 @@
     <string name="eula_title">EULA</string>
     <string name="eula_accept">Accept</string>
     <string name="eula_refuse">Refuse</string>
+    <string name="tts_warning_title">Install missing voice data</string>
+    <string name="tts_warning_summary">Install missing voice data for the text-to-speech engine. Required to speak music app selections.</string>
 </resources>

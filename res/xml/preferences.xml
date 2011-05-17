@@ -4,4 +4,5 @@
   <CheckBoxPreference android:key="enable_receiver" android:title="@string/pref_enable_title" android:defaultValue="true" android:summary="@string/pref_enable_summary"/>
 <ListPreference  android:dependency="enable_receiver" android:title="@string/pref_timeout_title" android:defaultValue="5" android:key="timeout" android:entries="@array/timeout_speeds" android:entryValues="@array/timeout_values" android:summary="@string/pref_timeout_summary"/>
 <CheckBoxPreference android:summary="@string/pref_conservative_summary" android:key="conservative" android:title="@string/pref_conservative_title" android:defaultValue="false" android:dependency="enable_receiver"></CheckBoxPreference>
+<Preference android:key="tts_warning" android:persistent="false" android:title="@string/tts_warning_title" android:summary="@string/tts_warning_summary"></Preference>
 </PreferenceScreen>
