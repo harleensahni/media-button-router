@@ -213,7 +213,11 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         }
     };
 
+    /** Used to figure out if music is playing and handle audio focus. */
     private AudioManager audioManager;
+
+    /** Preferences. */
+    private SharedPreferences preferences;
 
     /**
      * {@inheritDoc}
@@ -285,7 +289,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         audioManager = (AudioManager) this.getSystemService(AUDIO_SERVICE);
         powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // XXX can't use integer array, argh:
         // http://code.google.com/p/android/issues/detail?id=2096
@@ -401,7 +405,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         textToSpeech.stop();
         timeoutExecutor.shutdownNow();
         audioManager.abandonAudioFocus(this);
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(SELECTION_KEY, btButtonSelection).commit();
+        preferences.edit().putInt(SELECTION_KEY, btButtonSelection).commit();
     }
 
     @Override
@@ -580,8 +584,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                         new SweepBroadcastReceiver(selectedReceiver.toString()));
                 // save the last acted on app in case we have no idea who is
                 // playing music so we can make a guess
-                PreferenceManager.getDefaultSharedPreferences(this).edit()
-                        .putString(SELECTION_ACTED_KEY, resolveInfo.activityInfo.name).commit();
+                preferences.edit().putString(SELECTION_ACTED_KEY, resolveInfo.activityInfo.name).commit();
                 finish();
             }
         }
@@ -658,7 +661,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 timeoutPlayer.release();
             }
         });
-
         finish();
     }
 
