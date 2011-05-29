@@ -229,7 +229,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         // not clear that this will always get called. I don't know how else to
         // query if the text to speech is started though.
 
-        // Only annouce if we haven't before
+        // Only announce if we haven't before
         if (!announced && trappedKeyEvent != null) {
             requestAudioFocus();
 
@@ -462,7 +462,10 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 break;
             }
             header.setText(String.format(getString(R.string.dialog_header_with_action), action));
-
+            if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
+                // scroll to last selected item
+                getListView().setSelection(btButtonSelection);
+            }
         } else {
             Log.i(TAG, "Media Button Selector: launched without key event, started with intent: " + getIntent());
 
@@ -635,9 +638,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      * Select the currently selected receiver.
      */
     private void select() {
-        // TODO if there is no selection, we should either forward to whoever
-        // would have handled if we didn't exist, or to mru
-
         if (btButtonSelection == -1) {
             finish();
         } else {
@@ -661,7 +661,15 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 timeoutPlayer.release();
             }
         });
-        finish();
+
+        // If the user has set their preference not to confirm actions, we'll
+        // just forward automatically to whoever was last selected. If no one is
+        // selected, it just acts like finish anyway.
+        if (preferences.getBoolean(Constants.CONFIRM_ACTION_PREF_KEY, true)) {
+            finish();
+        } else {
+            select();
+        }
     }
 
     /**

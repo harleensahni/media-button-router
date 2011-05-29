@@ -30,4 +30,6 @@
     <string name="eula_refuse">Refuse</string>
     <string name="tts_warning_title">Install missing voice data</string>
     <string name="tts_warning_summary">Install missing voice data for the text-to-speech engine. Required to speak music app selections.</string>
+    <string name="pref_confirm_action_title">Confirm selection</string>
+    <string name="confirm_action_summary">When checked, confirm app by hitting play. Uncheck, will default to whatever is app is selected on timeout (one less button press).</string>
 </resources>
