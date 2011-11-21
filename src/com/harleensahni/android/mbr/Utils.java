@@ -15,6 +15,7 @@
  */
 package com.harleensahni.android.mbr;
 
+import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
@@ -104,8 +105,11 @@ public final class Utils {
         // on load, and we are unable to tell when this app is playing music,
         // android's default behavior should be correct.
         if (launch) {
-            context.startActivity(context.getPackageManager().getLaunchIntentForPackage(
-                    selectedReceiver.getPackageName()));
+            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(
+                    selectedReceiver.getPackageName());
+            if (launchIntent != null) {
+                context.startActivity(launchIntent);
+            }
         }
 
         context.sendOrderedBroadcast(mediaButtonDownIntent, null, cleanUpReceiver, null, Activity.RESULT_OK, null, null);
@@ -113,10 +117,58 @@ public final class Utils {
 
     }
 
-    public static List<ResolveInfo> getMediaReceivers(PackageManager packageManager) {
+    /**
+     * Gets the list of available media receivers, optionally filtering out ones
+     * the user has indicated should be hidden in preferences.
+     * 
+     * @param packageManager
+     *            The {@code PackageManager} used to retrieve media button
+     *            receivers.
+     * 
+     * @param filterHidden
+     *            Whether user-hidden media receivers should be shown.
+     * @return The list of {@code ResolveInfo} for different media button
+     *         receivers.
+     */
+    public static List<ResolveInfo> getMediaReceivers(PackageManager packageManager, boolean filterHidden,
+            Context context) {
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        return packageManager.queryBroadcastReceivers(mediaButtonIntent, PackageManager.GET_INTENT_FILTERS
-                | PackageManager.GET_RESOLVED_FILTER);
+
+        List<ResolveInfo> mediaReceivers = packageManager.queryBroadcastReceivers(mediaButtonIntent,
+                PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER);
+        if (filterHidden) {
+
+            String hiddenReceiverIdsString = PreferenceManager.getDefaultSharedPreferences(context).getString(
+                    Constants.HIDDEN_APPS_KEY, "");
+            List<String> hiddenIds = Arrays.asList(hiddenReceiverIdsString.split(","));
+
+            for (int i = mediaReceivers.size() - 1; i >= 0; i--) {
+                ResolveInfo mediaReceiverResolveInfo = mediaReceivers.get(i);
+                // i have to be more exact than just application name because
+                // the two versions (old and new) of google music
+                // have the same classnames for their intent receivers. I need
+                // to know where their apks live to be able to differentiate.
+                String name = mediaReceiverResolveInfo.activityInfo.applicationInfo.sourceDir
+                        + mediaReceiverResolveInfo.activityInfo.name;
+                if (hiddenIds.contains(name)) {
+                    mediaReceivers.remove(i);
+                }
+            }
+        }
+
+        return mediaReceivers;
+    }
+
+    /**
+     * Returns the name of the application of the broadcast receiver specified
+     * by {@code resolveInfo}.
+     * 
+     * @param resolveInfo
+     *            The receiver.
+     * @return The name of the application.
+     */
+    public static String getAppName(ResolveInfo resolveInfo, PackageManager packageManager) {
+        return resolveInfo.activityInfo.applicationInfo.loadLabel(packageManager).toString();
     }
 
     public static AlertDialog showIntroifNeccessary(Context context) {

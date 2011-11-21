@@ -257,7 +257,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             String textToSpeak = null;
             if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
                 textToSpeak = String.format(getString(R.string.application_announce_speak_text), actionText,
-                        getAppName(receivers.get(btButtonSelection)));
+                        Utils.getAppName(receivers.get(btButtonSelection), getPackageManager()));
             } else {
                 textToSpeak = String.format(getString(R.string.announce_speak_text), actionText);
             }
@@ -297,7 +297,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
 
         btButtonSelection = preferences.getInt(SELECTION_KEY, -1);
 
-        receivers = Utils.getMediaReceivers(getPackageManager());
+        receivers = Utils.getMediaReceivers(getPackageManager(), true, getApplicationContext());
 
         Boolean lastAnnounced = (Boolean) getLastNonConfigurationInstance();
         if (lastAnnounced != null) {
@@ -351,7 +351,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 imageView.setImageDrawable(resolveInfo.loadIcon(getPackageManager()));
 
                 TextView textView = (TextView) view.findViewById(R.id.receiverAppName);
-                textView.setText(getAppName(resolveInfo));
+                textView.setText(Utils.getAppName(resolveInfo, getPackageManager()));
                 return view;
 
             }
@@ -594,18 +594,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
     }
 
     /**
-     * Returns the name of the application of the broadcast receiver specified
-     * by {@code resolveInfo}.
-     * 
-     * @param resolveInfo
-     *            The receiver.
-     * @return The name of the application.
-     */
-    private String getAppName(ResolveInfo resolveInfo) {
-        return resolveInfo.activityInfo.applicationInfo.loadLabel(getPackageManager()).toString();
-    }
-
-    /**
      * Moves selection by the amount specified in the list. If we're already at
      * the last item and we're moving forward, wraps to the first item. If we're
      * already at the first item, and we're moving backwards, wraps to the last
@@ -630,7 +618,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         // May not highlight, but will scroll to item
         getListView().setSelection(btButtonSelection);
 
-        textToSpeech.speak(getAppName(receivers.get(btButtonSelection)), TextToSpeech.QUEUE_FLUSH, null);
+        textToSpeech.speak(Utils.getAppName(receivers.get(btButtonSelection), getPackageManager()),
+                TextToSpeech.QUEUE_FLUSH, null);
 
     }
 

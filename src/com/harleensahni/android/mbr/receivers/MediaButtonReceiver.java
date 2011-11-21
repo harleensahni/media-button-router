@@ -95,7 +95,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
 
                     // XXX Move stuff like receivers to service so we can cache
                     // it. Doing too much stuff here
-                    List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager());
+                    List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager(), false, null);
 
                     // Remove our app from the list so users can't select it.
                     if (receivers != null) {

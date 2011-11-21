@@ -15,12 +15,23 @@
  */
 package com.harleensahni.android.mbr;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+
+import com.harleensahni.android.mbr.receivers.MediaButtonReceiver;
 
 /**
  * Settings activity for Media Button Router. This is the activity that the user
@@ -39,6 +50,58 @@ public class MediaButtonConfigure extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+
+        // Add preferences for hiding apps
+        PreferenceCategory visibleAppsCategory = new PreferenceCategory(this);
+        visibleAppsCategory.setTitle(R.string.visible_apps_header);
+        getPreferenceScreen().addPreference(visibleAppsCategory);
+        final List<CheckBoxPreference> showAppCheckBoxPreferences = new ArrayList<CheckBoxPreference>();
+        OnPreferenceChangeListener showPreferenceChangeListener = new Preference.OnPreferenceChangeListener() {
+
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                StringBuilder hiddenApps = new StringBuilder();
+                boolean first = true;
+
+                for (CheckBoxPreference checkBoxPreference : showAppCheckBoxPreferences) {
+                    if ((preference == checkBoxPreference && newValue == Boolean.FALSE)
+                            || ((preference != checkBoxPreference && !checkBoxPreference.isChecked()))) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            hiddenApps.append(",");
+                        }
+                        hiddenApps.append(checkBoxPreference.getKey());
+                    }
+                }
+
+                PreferenceManager.getDefaultSharedPreferences(MediaButtonConfigure.this).edit()
+                        .putString(Constants.HIDDEN_APPS_KEY, hiddenApps.toString()).commit();
+
+                return true;
+            }
+        };
+
+        String hiddenReceiverIdsString = PreferenceManager.getDefaultSharedPreferences(this).getString(
+                Constants.HIDDEN_APPS_KEY, "");
+        List<String> hiddenIds = Arrays.asList(hiddenReceiverIdsString.split(","));
+
+        List<ResolveInfo> mediaReceivers = Utils.getMediaReceivers(getPackageManager(), false, null);
+        for (ResolveInfo mediaReceiver : mediaReceivers) {
+            if (MediaButtonReceiver.class.getName().equals(mediaReceiver.activityInfo.name)) {
+                continue;
+            }
+            CheckBoxPreference showReceiverPreference = new CheckBoxPreference(this);
+            showReceiverPreference.setTitle(Utils.getAppName(mediaReceiver, getPackageManager()));
+            showReceiverPreference.setPersistent(false);
+            showReceiverPreference.setKey(mediaReceiver.activityInfo.applicationInfo.sourceDir
+                    + mediaReceiver.activityInfo.name);
+            showReceiverPreference.setChecked(!hiddenIds.contains(showReceiverPreference.getKey()));
+            showReceiverPreference.setOnPreferenceChangeListener(showPreferenceChangeListener);
+            visibleAppsCategory.addPreference(showReceiverPreference);
+            showAppCheckBoxPreferences.add(showReceiverPreference);
+        }
+
         Eula.show(this);
         Utils.showIntroifNeccessary(this);
 
