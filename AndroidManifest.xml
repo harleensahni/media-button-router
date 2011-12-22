@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.harleensahni.android.mbr"
-      android:versionCode="68"
+      android:versionCode="71"
       android:versionName="1.2.0">
 
 
@@ -43,5 +43,5 @@
 
     </application>
     <uses-permission android:name = "android.permission.WAKE_LOCK"/>
-    <uses-sdk android:minSdkVersion = "8" />
+    <uses-sdk android:minSdkVersion = "8" android:maxSdkVersion="13"/>
 </manifest>
