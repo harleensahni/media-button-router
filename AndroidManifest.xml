@@ -40,8 +40,21 @@
 				<action android:name="android.intent.action.MEDIA_BUTTON"/>
 			</intent-filter>
 		</receiver>
+		
+		<receiver android:name=".receivers.MediaButtonRouterBootReceiver">
+			<!--  This priority is higher than is supposed to be used for user apps, 
+			but we need to beat out other receivers since we're trying to manage it all ourselves. 
+			Besides, WinAmp uses this priority (that's why we can't beat it)-->
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED"/>
+			</intent-filter>
+		</receiver>
 
+		<service android:name=".MediaButtonMonitorService">
+		</service>
+		
+		
     </application>
     <uses-permission android:name = "android.permission.WAKE_LOCK"/>
-    <uses-sdk android:minSdkVersion = "8" android:maxSdkVersion="13"/>
+    <uses-sdk android:minSdkVersion = "8"/>
 </manifest>

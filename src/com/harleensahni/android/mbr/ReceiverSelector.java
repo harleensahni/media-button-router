@@ -234,7 +234,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             requestAudioFocus();
 
             String actionText = "";
-            switch (trappedKeyEvent.getKeyCode()) {
+            switch (Utils.getAdjustedKeyCode(trappedKeyEvent)) {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 // This is just play even though the keycode is both play/pause,
                 // the app shouldn't handle
@@ -583,7 +583,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
 
                 ComponentName selectedReceiver = new ComponentName(resolveInfo.activityInfo.packageName,
                         resolveInfo.activityInfo.name);
-                Utils.forwardKeyCodeToComponent(this, selectedReceiver, true, trappedKeyEvent.getKeyCode(),
+                Utils.forwardKeyCodeToComponent(this, selectedReceiver, true,
+                        Utils.getAdjustedKeyCode(trappedKeyEvent),
                         new SweepBroadcastReceiver(selectedReceiver.toString()));
                 // save the last acted on app in case we have no idea who is
                 // playing music so we can make a guess

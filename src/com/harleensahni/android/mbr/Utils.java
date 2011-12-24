@@ -45,6 +45,8 @@ import android.view.KeyEvent;
 public final class Utils {
 
     private static final String TAG = "MediaButtonRouter";
+    public static final int KEYCODE_MEDIA_PLAY = 126;
+    public static final int KEYCODE_MEDIA_PAUSE = 127;
 
     /**
      * Prevent instantiation.
@@ -62,7 +64,8 @@ public final class Utils {
     public static boolean isMediaButton(int keyCode) {
         return keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD || keyCode == KeyEvent.KEYCODE_MEDIA_NEXT
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS
-                || keyCode == KeyEvent.KEYCODE_MEDIA_REWIND || keyCode == KeyEvent.KEYCODE_MEDIA_STOP;
+                || keyCode == KeyEvent.KEYCODE_MEDIA_REWIND || keyCode == KeyEvent.KEYCODE_MEDIA_STOP
+                || keyCode == KEYCODE_MEDIA_PLAY || keyCode == KEYCODE_MEDIA_PAUSE;
     }
 
     /**
@@ -197,5 +200,13 @@ public final class Utils {
             return alertDialog.show();
         }
         return null;
+    }
+    
+    public static int getAdjustedKeyCode(KeyEvent keyEvent) {
+    	int keyCode = keyEvent.getKeyCode();
+    	if (keyCode == KEYCODE_MEDIA_PLAY || keyCode == KEYCODE_MEDIA_PAUSE) {
+    		keyCode = KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE;
+    	}
+    	return keyCode;
     }
 }

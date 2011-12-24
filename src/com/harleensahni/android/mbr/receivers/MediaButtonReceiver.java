@@ -47,7 +47,7 @@ import com.harleensahni.android.mbr.Utils;
  * @author Harleen Sahni
  */
 public class MediaButtonReceiver extends BroadcastReceiver {
-
+	
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -55,7 +55,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         if (!preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
             return;
         }
-
+        
         // Sometimes we take too long finish and Android kills
         // us and forwards the intent to another broadcast receiver. If this
         // keeps being a problem, than we should always return immediately and
@@ -67,7 +67,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
             Log.i(TAG, "Media Button Receiver: received media button intent: " + intent);
 
             KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
-            int keyCode = keyEvent.getKeyCode();
+            int keyCode = Utils.getAdjustedKeyCode(keyEvent);
 
             // Don't want to capture volume buttons
             if (Utils.isMediaButton(keyCode)) {
@@ -76,93 +76,111 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                 AudioManager audioManager = ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE));
 
                 if (audioManager.isMusicActive()) {
-                    // XXX Need to improve this behavior, somethings doesn't
-                    // work. For instance, if you select "Listen" App, and then
-                    // hit next,
-                    // the built in music app handles it because it has a higher
-                    // priority. If we could change priorities on app selection
-                    // and have it stick,
-                    // would probably be good enough to handle this.
-                    // One thing to do would be to add specific classes that
-                    // check for each knowhn app if our generic way doesn't work
-                    // well for them
-                    Log.d(TAG, "Media Button Receiver: may pass on event because music is already playing: " + keyEvent);
-
-                    // Try to best guess who is playing the music based off of
-                    // running foreground services.
-                    ActivityManager activityManager = ((ActivityManager) context
-                            .getSystemService(Context.ACTIVITY_SERVICE));
-
-                    // XXX Move stuff like receivers to service so we can cache
-                    // it. Doing too much stuff here
-                    List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager(), false, null);
-
-                    // Remove our app from the list so users can't select it.
-                    if (receivers != null) {
-
-                        List<RunningServiceInfo> runningServices = activityManager
-                                .getRunningServices(Integer.MAX_VALUE);
-                        // Only need to look at services that are foreground
-                        // and started
-                        List<RunningServiceInfo> candidateServices = new ArrayList<ActivityManager.RunningServiceInfo>();
-                        for (RunningServiceInfo runningService : runningServices) {
-                            if (runningService.started && runningService.foreground) {
-                                candidateServices.add(runningService);
-                            }
-                        }
-
-                        boolean matched = false;
-                        for (ResolveInfo resolveInfo : receivers) {
-                            if (MediaButtonReceiver.class.getName().equals(resolveInfo.activityInfo.name)) {
-                                continue;
-                            }
-
-                            // Find any service that's package matches that of a
-                            // receivers.
-                            for (RunningServiceInfo candidateService : candidateServices) {
-                                if (candidateService.foreground
-                                        && candidateService.started
-                                        && resolveInfo.activityInfo.packageName.equals(candidateService.service
-                                                .getPackageName())) {
-                                    if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                                        Utils.forwardKeyCodeToComponent(context, new ComponentName(
-                                                resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name),
-                                                false, keyCode, null);
-                                    }
-                                    abortBroadcast();
-                                    matched = true;
-                                    Log.i(TAG, "Media Button Receiver: Music playing and passed on event : " + keyEvent
-                                            + " to " + resolveInfo.activityInfo.name);
-                                    break;
-                                }
-                            }
-                            if (matched) {
-                                // TODO Need to handle case with multiple
-                                // matches, maybe by showing selector
-                                break;
-                            }
-                        }
-                        if (!matched) {
-                            if (preferences.getBoolean(Constants.CONSERVATIVE_PREF_KEY, false)) {
-                                abortBroadcast();
-                                Log.i(TAG,
-                                        "Media Button Receiver: No Receivers found playing music. Intent broadcast will be aborted.");
-                                if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                                    showSelector(context, intent, keyEvent);
-                                }
-
-                            } else {
-                                Log.i(TAG,
-                                        "Media Button Receiver: No Receivers found playing music. Intent will use regular priorities.");
-                            }
-                        }
-                    }
-
-                    return;
+                	   String last_media_button_receiver = preferences.getString(Constants.LAST_MEDIA_BUTTON_RECEIVER, null);
+                	   
+                	   if (last_media_button_receiver == null) {
+	                		   
+	                	   
+	                    // XXX Need to improve this behavior, somethings doesn't
+	                    // work. For instance, if you select "Listen" App, and then
+	                    // hit next,
+	                    // the built in music app handles it because it has a higher
+	                    // priority. If we could change priorities on app selection
+	                    // and have it stick,
+	                    // would probably be good enough to handle this.
+	                    // One thing to do would be to add specific classes that
+	                    // check for each knowhn app if our generic way doesn't work
+	                    // well for them
+	                    Log.d(TAG, "Media Button Receiver: may pass on event because music is already playing: " + keyEvent);
+	
+	                    // Try to best guess who is playing the music based off of
+	                    // running foreground services.
+	                    ActivityManager activityManager = ((ActivityManager) context
+	                            .getSystemService(Context.ACTIVITY_SERVICE));
+	
+	                    // XXX Move stuff like receivers to service so we can cache
+	                    // it. Doing too much stuff here
+	                    List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager(), false, null);
+	
+	                    // Remove our app from the list so users can't select it.
+	                    if (receivers != null) {
+	
+	                        List<RunningServiceInfo> runningServices = activityManager
+	                                .getRunningServices(Integer.MAX_VALUE);
+	                        // Only need to look at services that are foreground
+	                        // and started
+	                        List<RunningServiceInfo> candidateServices = new ArrayList<ActivityManager.RunningServiceInfo>();
+	                        for (RunningServiceInfo runningService : runningServices) {
+	                            if (runningService.started && runningService.foreground) {
+	                                candidateServices.add(runningService);
+	                            }
+	                        }
+	
+	                        boolean matched = false;
+	                        for (ResolveInfo resolveInfo : receivers) {
+	                            if (MediaButtonReceiver.class.getName().equals(resolveInfo.activityInfo.name)) {
+	                                continue;
+	                            }
+	
+	                            // Find any service that's package matches that of a
+	                            // receivers.
+	                            for (RunningServiceInfo candidateService : candidateServices) {
+	                                if (candidateService.foreground
+	                                		 && candidateService.started
+	                                        && resolveInfo.activityInfo.packageName.equals(candidateService.service
+	                                                .getPackageName())) {
+	                                    if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+	                                        Utils.forwardKeyCodeToComponent(context, new ComponentName(
+	                                                resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name),
+	                                                false, keyCode, null);
+	                                    	}
+	                                    if (isOrderedBroadcast()) {
+	                                    	abortBroadcast();
+	                                    	}
+	                                    matched = true;
+	                                    Log.i(TAG, "Media Button Receiver: Music playing and passed on event : " + keyEvent
+	                                            + " to " + resolveInfo.activityInfo.name);
+	                                    break;
+	                                }
+	                            }
+	                            if (matched) {
+	                                // TODO Need to handle case with multiple
+	                                // matches, maybe by showing selector
+	                                break;
+	                            }
+	                        }
+	                        if (!matched) {
+	                            if (preferences.getBoolean(Constants.CONSERVATIVE_PREF_KEY, false)) {
+	                            	if (isOrderedBroadcast()) {
+	                            		abortBroadcast();
+	                            		}
+	                                Log.i(TAG,
+	                                        "Media Button Receiver: No Receivers found playing music. Intent broadcast will be aborted.");
+	                                if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+	                                    showSelector(context, intent, keyEvent);
+	                                }
+	
+	                            } else {
+	                                Log.i(TAG,
+	                                        "Media Button Receiver: No Receivers found playing music. Intent will use regular priorities.");
+	                            }
+	                        }
+	                    }
+	
+	                    return;
+	                } else {
+	                	if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
+	                		Utils.forwardKeyCodeToComponent(context, ComponentName.unflattenFromString(last_media_button_receiver), false, keyCode, null);
+	                	}
+	                	return;
+	                }
                 }
+                	
 
                 // No music playing
-                abortBroadcast();
+                if (isOrderedBroadcast()) {
+                		abortBroadcast();
+                }
 
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
                     showSelector(context, intent, keyEvent);

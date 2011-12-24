@@ -34,5 +34,6 @@ public class Constants {
     public static final String CONSERVATIVE_PREF_KEY = "conservative";
     public static final String CONFIRM_ACTION_PREF_KEY = "confirm_action";
     public static final String HIDDEN_APPS_KEY = "hidden_apps";
+    public static final String LAST_MEDIA_BUTTON_RECEIVER = "last_media_button_receiver";
 
 }

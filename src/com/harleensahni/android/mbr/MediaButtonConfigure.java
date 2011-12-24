@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -108,6 +110,38 @@ public class MediaButtonConfigure extends PreferenceActivity {
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, TEXT_TO_SPEECH_CHECK_CODE);
+
+        // Starts the media monitor service. Most of the time it should be
+        // started on boot, but that's not true if the app has just been
+        // installed.
+        // TODO check if enabled
+        // TODO add listener to enable preference to start stop service
+
+        if (android.os.Build.VERSION.SDK_INT >= 14) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+            if (preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
+                Intent intent = new Intent(this, MediaButtonMonitorService.class);
+                startService(intent);
+            }
+
+            preferences.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    if (Constants.ENABLED_PREF_KEY.equals(key)) {
+                        Intent intent = new Intent(MediaButtonConfigure.this, MediaButtonMonitorService.class);
+                        if (sharedPreferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
+                            startService(intent);
+                        } else {
+                            stopService(intent);
+                        }
+
+                    }
+
+                }
+            });
+        }
 
     }
 
