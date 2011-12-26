@@ -205,7 +205,23 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                 }
 
                 if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                    showSelector(context, intent, keyEvent);
+                    List<ResolveInfo> receivers = Utils.getMediaReceivers(context.getPackageManager(), true, context);
+
+                    if (receivers.size() == 2) {
+                        for (ResolveInfo resolveInfo : receivers) {
+                            if (!MediaButtonReceiver.class.getName().equals(resolveInfo.activityInfo.name)) {
+                                // Not using last last_media_button_receiver
+                                // since we want this feature to work just as
+                                // well on Android version < 4.0
+                                Utils.forwardKeyCodeToComponent(context, new ComponentName(
+                                        resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name), false,
+                                        keyCode, null);
+                                break;
+                            }
+                        }
+                    } else {
+                        showSelector(context, intent, keyEvent);
+                    }
                 }
             }
 
