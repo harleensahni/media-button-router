@@ -73,7 +73,8 @@ public class MediaButtonMonitorService extends Service {
     }
 
     public void onDestroy() {
-        Log.d(TAG, "onDestroy()");
+        Log.d(TAG, "onDestroy() called. Unregistering media button receiver.");
+        mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
     }
 
     public void registerMediaButtonReceiver() {
