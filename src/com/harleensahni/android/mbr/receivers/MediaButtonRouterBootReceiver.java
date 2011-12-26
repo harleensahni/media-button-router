@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.harleensahni.android.mbr.Constants;
 import com.harleensahni.android.mbr.MediaButtonMonitorService;
@@ -15,9 +16,9 @@ public class MediaButtonRouterBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Utils.isHandlingThroughSoleReceiver()) {
-
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             if (preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
+                Log.d(Constants.TAG, "Starting media button monitor service through boot listener");
                 Intent serviceIntent = new Intent(context, MediaButtonMonitorService.class);
                 context.startService(serviceIntent);
             }
