@@ -8,12 +8,13 @@ import android.preference.PreferenceManager;
 
 import com.harleensahni.android.mbr.Constants;
 import com.harleensahni.android.mbr.MediaButtonMonitorService;
+import com.harleensahni.android.mbr.Utils;
 
 public class MediaButtonRouterBootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (android.os.Build.VERSION.SDK_INT >= 14) {
+        if (Utils.isHandlingThroughSoleReceiver()) {
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             if (preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {

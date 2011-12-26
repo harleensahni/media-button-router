@@ -47,6 +47,7 @@ public final class Utils {
     private static final String TAG = "MediaButtonRouter";
     public static final int KEYCODE_MEDIA_PLAY = 126;
     public static final int KEYCODE_MEDIA_PAUSE = 127;
+    public static final int ICS_API_LEVEL = 14;
 
     /**
      * Prevent instantiation.
@@ -201,12 +202,24 @@ public final class Utils {
         }
         return null;
     }
-    
+
     public static int getAdjustedKeyCode(KeyEvent keyEvent) {
-    	int keyCode = keyEvent.getKeyCode();
-    	if (keyCode == KEYCODE_MEDIA_PLAY || keyCode == KEYCODE_MEDIA_PAUSE) {
-    		keyCode = KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE;
-    	}
-    	return keyCode;
+        int keyCode = keyEvent.getKeyCode();
+        if (keyCode == KEYCODE_MEDIA_PLAY || keyCode == KEYCODE_MEDIA_PAUSE) {
+            keyCode = KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE;
+        }
+        return keyCode;
+    }
+
+    /**
+     * Whether we have to go through AudioManager's register media button
+     * receiver where this is only a single media button receiver. See ticket
+     * #10.
+     * 
+     * @return
+     */
+    public static boolean isHandlingThroughSoleReceiver() {
+
+        return android.os.Build.VERSION.SDK_INT >= ICS_API_LEVEL;
     }
 }
