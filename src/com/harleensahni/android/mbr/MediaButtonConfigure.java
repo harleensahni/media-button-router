@@ -121,7 +121,6 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
         // TODO add listener to enable preference to start stop service
 
         if (Utils.isHandlingThroughSoleReceiver()) {
-
             if (Utils.isHandlingThroughSoleReceiver() && preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
                 Intent intent = new Intent(this, MediaButtonMonitorService.class);
                 startService(intent);
@@ -143,7 +142,9 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
     @Override
     protected void onPause() {
         super.onPause();
-        preferences.unregisterOnSharedPreferenceChangeListener(this);
+        if (Utils.isHandlingThroughSoleReceiver()) {
+            preferences.unregisterOnSharedPreferenceChangeListener(this);
+        }
     }
 
     @Override
