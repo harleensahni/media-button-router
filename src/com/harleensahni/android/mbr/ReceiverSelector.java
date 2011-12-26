@@ -633,7 +633,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      * Select the currently selected receiver.
      */
     private void select() {
-        if (btButtonSelection == -1) {
+        if (btButtonSelection == -1 || btButtonSelection >= receivers.size()) {
             finish();
         } else {
             forwardToMediaReceiver(btButtonSelection);
