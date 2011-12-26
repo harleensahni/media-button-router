@@ -41,9 +41,10 @@ import com.harleensahni.android.mbr.receivers.MediaButtonReceiver;
  * 
  * @author Harleen Sahni
  */
-public class MediaButtonConfigure extends PreferenceActivity {
+public class MediaButtonConfigure extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
     private static final int TEXT_TO_SPEECH_CHECK_CODE = 123;
+    private SharedPreferences preferences;
 
     /**
      * {@inheritDoc}
@@ -111,6 +112,8 @@ public class MediaButtonConfigure extends PreferenceActivity {
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, TEXT_TO_SPEECH_CHECK_CODE);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         // Starts the media monitor service. Most of the time it should be
         // started on boot, but that's not true if the app has just been
         // installed.
@@ -118,29 +121,41 @@ public class MediaButtonConfigure extends PreferenceActivity {
         // TODO add listener to enable preference to start stop service
 
         if (Utils.isHandlingThroughSoleReceiver()) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-            if (preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
+            if (Utils.isHandlingThroughSoleReceiver() && preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
                 Intent intent = new Intent(this, MediaButtonMonitorService.class);
                 startService(intent);
             }
 
-            preferences.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+        }
 
-                @Override
-                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                    if (Constants.ENABLED_PREF_KEY.equals(key)) {
-                        Intent intent = new Intent(MediaButtonConfigure.this, MediaButtonMonitorService.class);
-                        if (sharedPreferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
-                            startService(intent);
-                        } else {
-                            stopService(intent);
-                        }
+    }
 
-                    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Utils.isHandlingThroughSoleReceiver()) {
+            preferences.registerOnSharedPreferenceChangeListener(this);
+        }
 
-                }
-            });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (Constants.ENABLED_PREF_KEY.equals(key)) {
+            Intent intent = new Intent(MediaButtonConfigure.this, MediaButtonMonitorService.class);
+            if (sharedPreferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {
+                startService(intent);
+            } else {
+                stopService(intent);
+            }
+
         }
 
     }

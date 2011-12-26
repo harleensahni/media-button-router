@@ -60,7 +60,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         ActivityManager activityManager = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
 
         if (Utils.isHandlingThroughSoleReceiver()) {
-            // Try to figure out if our selectir is currently open
+            // Try to figure out if our selector is currently open
             List<RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
             if (runningTasks.size() > 0) {
                 String className = runningTasks.get(0).topActivity.getClassName();
