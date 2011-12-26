@@ -180,8 +180,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
-            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction()) || Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS.equals(intent.getAction())) {
                 KeyEvent navigationKeyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
                 int keyCode = navigationKeyEvent.getKeyCode();
                 if (Utils.isMediaButton(keyCode)) {
@@ -205,7 +204,9 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                             break;
                         }
                     }
-                    abortBroadcast();
+                    if (isOrderedBroadcast()) {
+                    	abortBroadcast();
+                    }
                 }
 
             }
@@ -280,6 +281,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         eulaAcceptedAlready = Eula.show(this);
 
         uiIntentFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
+        uiIntentFilter.addAction(Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS);
         uiIntentFilter.setPriority(Integer.MAX_VALUE);
 
         // TODO Handle text engine not installed, etc. Documented on android
@@ -604,7 +606,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      *            The amount to move, may be positive or negative.
      */
     private void moveSelection(int amount) {
-
         resetTimeout();
         btButtonSelection += amount;
 
