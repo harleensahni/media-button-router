@@ -117,7 +117,7 @@ public class MediaButtonConfigure extends PreferenceActivity {
         // TODO check if enabled
         // TODO add listener to enable preference to start stop service
 
-        if (android.os.Build.VERSION.SDK_INT >= 14) {
+        if (Utils.isHandlingThroughSoleReceiver()) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
             if (preferences.getBoolean(Constants.ENABLED_PREF_KEY, true)) {

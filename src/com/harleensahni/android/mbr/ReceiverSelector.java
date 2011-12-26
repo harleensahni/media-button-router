@@ -180,7 +180,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction()) || Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS.equals(intent.getAction())) {
+            if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())
+                    || Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS.equals(intent.getAction())) {
                 KeyEvent navigationKeyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
                 int keyCode = navigationKeyEvent.getKeyCode();
                 if (Utils.isMediaButton(keyCode)) {
@@ -205,7 +206,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                         }
                     }
                     if (isOrderedBroadcast()) {
-                    	abortBroadcast();
+                        abortBroadcast();
                     }
                 }
 
@@ -398,6 +399,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
     @Override
     protected void onPause() {
         super.onPause();
+        preferences.edit().putBoolean(Constants.SELECTOR_OPEN, false).commit();
         Log.d(TAG, "Media Button Selector: onPause");
         Log.d(TAG, "Media Button Selector: unegistered UI receiver");
         unregisterReceiver(uiMediaReceiver);
@@ -501,6 +503,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             // dismiss.
             resetTimeout();
         }
+
+        preferences.edit().putBoolean(Constants.SELECTOR_OPEN, true).commit();
     }
 
     /**
