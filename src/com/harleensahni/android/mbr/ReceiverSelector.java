@@ -399,7 +399,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
     @Override
     protected void onPause() {
         super.onPause();
-        preferences.edit().putBoolean(Constants.SELECTOR_OPEN, false).commit();
         Log.d(TAG, "Media Button Selector: onPause");
         Log.d(TAG, "Media Button Selector: unegistered UI receiver");
         unregisterReceiver(uiMediaReceiver);
@@ -503,8 +502,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             // dismiss.
             resetTimeout();
         }
-
-        preferences.edit().putBoolean(Constants.SELECTOR_OPEN, true).commit();
     }
 
     /**

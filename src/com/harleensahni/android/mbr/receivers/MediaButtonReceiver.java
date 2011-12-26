@@ -22,6 +22,7 @@ import java.util.List;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -56,16 +57,24 @@ public class MediaButtonReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (Utils.isHandlingThroughSoleReceiver()) {
+        ActivityManager activityManager = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
 
-            if (preferences.getBoolean(Constants.SELECTOR_OPEN, false)) {
-                Intent receiver_selector_intent = new Intent(Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS);
-                receiver_selector_intent.putExtras(intent);
-                context.sendBroadcast(receiver_selector_intent);
-                if (isOrderedBroadcast()) {
-                    abortBroadcast();
+        if (Utils.isHandlingThroughSoleReceiver()) {
+            // Try to figure out if our selectir is currently open
+            List<RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
+            if (runningTasks.size() > 0) {
+                String className = runningTasks.get(0).topActivity.getClassName();
+                if (className.equals(ReceiverSelector.class.getName())
+                        || className.equals(ReceiverSelectorLocked.class.getName())) {
+                    Log.d(TAG, "Selector is already open, rebroadcasting for selector only.");
+                    Intent receiver_selector_intent = new Intent(Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS);
+                    receiver_selector_intent.putExtras(intent);
+                    context.sendBroadcast(receiver_selector_intent);
+                    if (isOrderedBroadcast()) {
+                        abortBroadcast();
+                    }
+                    return;
                 }
-                return;
             }
         }
 
@@ -114,8 +123,6 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                         // Try to best guess who is playing the music based off
                         // of
                         // running foreground services.
-                        ActivityManager activityManager = ((ActivityManager) context
-                                .getSystemService(Context.ACTIVITY_SERVICE));
 
                         // XXX Move stuff like receivers to service so we can
                         // cache
