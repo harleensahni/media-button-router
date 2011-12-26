@@ -56,6 +56,10 @@ public class MediaButtonReceiver extends BroadcastReceiver {
             return;
         }
         
+        Intent receiver_selector_intent = new Intent(Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS);
+        receiver_selector_intent.putExtras(intent);
+        context.sendBroadcast(receiver_selector_intent);
+        
         // Sometimes we take too long finish and Android kills
         // us and forwards the intent to another broadcast receiver. If this
         // keeps being a problem, than we should always return immediately and
