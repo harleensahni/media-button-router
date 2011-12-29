@@ -31,7 +31,14 @@ import android.util.Log;
 
 import com.harleensahni.android.mbr.receivers.MediaButtonReceiver;
 
-public class MediaButtonMonitorService extends Service {
+/**
+ * Monitors when the media button receiver registered with the audio manager changes, and sets 
+ * it back to media button router's receiver. Allows media button router to correctly intercept
+ * all media button presses.
+ * 
+ * @author Peter Haight
+ */
+ public class MediaButtonMonitorService extends Service {
     public static final String TAG = "MediaButtonMonitorService";
     public SettingsObserver mSettingsObserver;
     public ComponentName mComponentName;
