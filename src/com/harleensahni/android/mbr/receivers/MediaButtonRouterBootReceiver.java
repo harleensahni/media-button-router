@@ -26,6 +26,11 @@ import com.harleensahni.android.mbr.Constants;
 import com.harleensahni.android.mbr.MediaButtonMonitorService;
 import com.harleensahni.android.mbr.Utils;
 
+/**
+ * Starts the media button monitor service on startup if media button router is enabled. 
+ * 
+ * @author Harleen Sahni
+ */
 public class MediaButtonRouterBootReceiver extends BroadcastReceiver {
 
     @Override
