@@ -187,7 +187,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 if (Utils.isMediaButton(keyCode)) {
                     Log.i(TAG, "Media Button Selector: UI is directly handling key: " + navigationKeyEvent);
                     if (navigationKeyEvent.getAction() == KeyEvent.ACTION_UP) {
-                        switch (keyCode) {
+                        switch (Utils.getAdjustedKeyCode(navigationKeyEvent)) {
                         case KeyEvent.KEYCODE_MEDIA_NEXT:
                             moveSelection(1);
                             break;
@@ -450,7 +450,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             getListView().setFocusableInTouchMode(true);
 
             String action = "";
-            switch (trappedKeyEvent.getKeyCode()) {
+            switch (Utils.getAdjustedKeyCode(trappedKeyEvent)) {
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 action = getString(audioManager.isMusicActive() ? R.string.pausePlay : R.string.play);
                 break;
