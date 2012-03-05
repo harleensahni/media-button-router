@@ -15,7 +15,7 @@
 				android:layout_gravity="center_vertical"></TextView>
 		</LinearLayout>
 		<ListView android:id="@android:id/list"
-			android:layout_height="0px" android:layout_weight="1" android:layout_width="match_parent"
+			android:layout_height="0px" android:layout_weight="1" android:layout_width="200dp"
 			android:paddingTop="10dp" android:paddingBottom="10dp"></ListView>
 		<Button android:id="@+id/cancelButton" android:layout_width="match_parent"
 			android:layout_height="wrap_content" android:text="@string/cancel_button"></Button>
