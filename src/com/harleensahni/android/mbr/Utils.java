@@ -96,9 +96,9 @@ public final class Utils {
         mediaButtonDownIntent.setComponent(selectedReceiver);
         mediaButtonUpIntent.setComponent(selectedReceiver);
 
-        Log.i(TAG, "Forwarding Down and Up intent events to " + selectedReceiver + " Down Intent: "
+        /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Forwarding Down and Up intent events to " + selectedReceiver + " Down Intent: "
                 + mediaButtonDownIntent + " Down key:" + downKe + " Up Intent: " + mediaButtonUpIntent + " Up key:"
-                + upKe);
+                + upKe); */
         // We start the selected application because some apps broadcast
         // receivers won't do anything with the intents unless the
         // application is open. (This this is only if the app isn't

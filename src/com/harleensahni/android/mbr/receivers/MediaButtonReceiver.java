@@ -86,14 +86,14 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         // TODO Handle the case where there is only 0 or 1 media receivers
         // besides ourself by disabling our media receiver
         if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-            Log.i(TAG, "Media Button Receiver: received media button intent: " + intent);
+            /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Receiver: received media button intent: " + intent); */
 
             KeyEvent keyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
             int keyCode = Utils.getAdjustedKeyCode(keyEvent);
 
             // Don't want to capture volume buttons
             if (Utils.isMediaButton(keyCode)) {
-                Log.i(TAG, "Media Button Receiver: handling legitimate media key event: " + keyEvent);
+                /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Receiver: handling legitimate media key event: " + keyEvent); */
 
                 AudioManager audioManager = ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE));
 
@@ -167,8 +167,8 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                                             abortBroadcast();
                                         }
                                         matched = true;
-                                        Log.i(TAG, "Media Button Receiver: Music playing and passed on event : "
-                                                + keyEvent + " to " + resolveInfo.activityInfo.name);
+                                        /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Receiver: Music playing and passed on event : "
+                                                + keyEvent + " to " + resolveInfo.activityInfo.name); */
                                         break;
                                     }
                                 }
@@ -183,15 +183,15 @@ public class MediaButtonReceiver extends BroadcastReceiver {
                                     if (isOrderedBroadcast()) {
                                         abortBroadcast();
                                     }
-                                    Log.i(TAG,
-                                            "Media Button Receiver: No Receivers found playing music. Intent broadcast will be aborted.");
+                                    /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG,
+                                            "Media Button Receiver: No Receivers found playing music. Intent broadcast will be aborted."); */
                                     if (keyEvent.getAction() == KeyEvent.ACTION_UP) {
                                         showSelector(context, intent, keyEvent);
                                     }
 
                                 } else {
-                                    Log.i(TAG,
-                                            "Media Button Receiver: No Receivers found playing music. Intent will use regular priorities.");
+                                    /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG,
+                                            "Media Button Receiver: No Receivers found playing music. Intent will use regular priorities."); */
                                 }
                             }
                         }
@@ -256,7 +256,7 @@ public class MediaButtonReceiver extends BroadcastReceiver {
         showForwardView.setClassName(context,
                 locked ? ReceiverSelectorLocked.class.getName() : ReceiverSelector.class.getName());
 
-        Log.i(TAG, "Media Button Receiver: starting selector activity for keyevent: " + keyEvent);
+        /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Receiver: starting selector activity for keyevent: " + keyEvent); */
 
         if (locked) {
 
