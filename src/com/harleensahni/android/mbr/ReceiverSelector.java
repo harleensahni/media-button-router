@@ -76,8 +76,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i(TAG, "Media Button Selector: After running broadcast receiver " + name + "have resultcode: "
-                    + getResultCode() + " result Data: " + getResultData());
+            /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Selector: After running broadcast receiver " + name + "have resultcode: "
+                    + getResultCode() + " result Data: " + getResultData()); */
         }
     }
 
@@ -185,7 +185,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 KeyEvent navigationKeyEvent = (KeyEvent) intent.getExtras().get(Intent.EXTRA_KEY_EVENT);
                 int keyCode = navigationKeyEvent.getKeyCode();
                 if (Utils.isMediaButton(keyCode)) {
-                    Log.i(TAG, "Media Button Selector: UI is directly handling key: " + navigationKeyEvent);
+                    /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Selector: UI is directly handling key: " + navigationKeyEvent); */
                     if (navigationKeyEvent.getAction() == KeyEvent.ACTION_UP) {
                         switch (Utils.getAdjustedKeyCode(navigationKeyEvent)) {
                         case KeyEvent.KEYCODE_MEDIA_NEXT:
@@ -374,7 +374,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         });
         mediaImage = (ImageView) findViewById(R.id.mediaImage);
 
-        Log.i(TAG, "Media Button Selector: created.");
+        /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Selector: created."); */
     }
 
     /**
@@ -451,7 +451,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         if (getIntent().getExtras() != null && getIntent().getExtras().get(Intent.EXTRA_KEY_EVENT) != null) {
             trappedKeyEvent = (KeyEvent) getIntent().getExtras().get(Intent.EXTRA_KEY_EVENT);
 
-            Log.i(TAG, "Media Button Selector: handling event: " + trappedKeyEvent + " from intent:" + getIntent());
+            /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Selector: handling event: " + trappedKeyEvent + " from intent:" + getIntent()); */
 
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             getListView().setClickable(true);
@@ -479,7 +479,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 getListView().setSelection(btButtonSelection);
             }
         } else {
-            Log.i(TAG, "Media Button Selector: launched without key event, started with intent: " + getIntent());
+            /* COMMENTED OUT FOR MARKET RELEASE Log.i(TAG, "Media Button Selector: launched without key event, started with intent: " + getIntent()); */
 
             trappedKeyEvent = null;
             getListView().setClickable(false);
