@@ -349,9 +349,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                 }
 
                 ResolveInfo resolveInfo = receivers.get(position);
-                if (btButtonSelection == position) {
-                    view.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
-                }
+                view.findViewById(R.id.receiverSelectionIndicator).setVisibility(
+                        btButtonSelection == position ? View.VISIBLE : view.INVISIBLE);
 
                 ImageView imageView = (ImageView) view.findViewById(R.id.receiverAppImage);
                 imageView.setImageDrawable(resolveInfo.loadIcon(getPackageManager()));
@@ -392,14 +391,15 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      */
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
-            getListView().getChildAt(btButtonSelection).findViewById(R.id.receiverSelectionIndicator)
-                    .setVisibility(View.INVISIBLE);
-        }
+        // if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
+        // getListView().getChildAt(btButtonSelection).findViewById(R.id.receiverSelectionIndicator)
+        // .setVisibility(View.INVISIBLE);
+        // }
         btButtonSelection = position;
+        getListView().invalidateViews();
 
-        getListView().getChildAt(btButtonSelection).findViewById(R.id.receiverSelectionIndicator)
-                .setVisibility(View.VISIBLE);
+        // getListView().getChildAt(btButtonSelection).findViewById(R.id.receiverSelectionIndicator)
+        // .setVisibility(View.VISIBLE);
 
         forwardToMediaReceiver(position);
     }
@@ -514,12 +514,12 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             resetTimeout();
         }
 
-        if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
-            View selectedView = getListView().getChildAt(btButtonSelection);
-            if (selectedView != null) {
-                selectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
-            }
-        }
+        // if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
+        // View selectedView = getListView().getChildAt(btButtonSelection);
+        // if (selectedView != null) {
+        // selectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
+        // }
+        // }
 
     }
 
@@ -627,12 +627,12 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      */
     private void moveSelection(int amount) {
         resetTimeout();
-        if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
-            View oldSelectedView = getListView().getChildAt(btButtonSelection);
-            if (oldSelectedView != null) {
-                oldSelectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.INVISIBLE);
-            }
-        }
+        // if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
+        // View oldSelectedView = getListView().getChildAt(btButtonSelection);
+        // if (oldSelectedView != null) {
+        // oldSelectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.INVISIBLE);
+        // }
+        // }
         btButtonSelection += amount;
 
         if (btButtonSelection >= receivers.size()) {
@@ -644,11 +644,13 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         }
 
         // May not highlight, but will scroll to item
+        getListView().invalidateViews();
         getListView().setSelection(btButtonSelection);
-        View selectedView = getListView().getChildAt(btButtonSelection);
-        if (selectedView != null) {
-            selectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
-        }
+
+        // View selectedView = getListView().getChildAt(btButtonSelection);
+        // if (selectedView != null) {
+        // selectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
+        // }
 
         textToSpeech.speak(Utils.getAppName(receivers.get(btButtonSelection), getPackageManager()),
                 TextToSpeech.QUEUE_FLUSH, null);
