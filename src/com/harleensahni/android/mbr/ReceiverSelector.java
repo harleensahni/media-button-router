@@ -285,14 +285,16 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         uiIntentFilter.addAction(Constants.INTENT_ACTION_VIEW_MEDIA_LIST_KEYPRESS);
         uiIntentFilter.setPriority(Integer.MAX_VALUE);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         // TODO Handle text engine not installed, etc. Documented on android
         // developer guide
-        textToSpeech = new TextToSpeech(this, this);
+        boolean ttsDisabled = preferences.getBoolean(Constants.DISABLE_TTS, false);
+
+        textToSpeech = ttsDisabled ? null : new TextToSpeech(this, this);
 
         audioManager = (AudioManager) this.getSystemService(AUDIO_SERVICE);
         powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // XXX can't use integer array, argh:
         // http://code.google.com/p/android/issues/detail?id=2096
@@ -381,8 +383,9 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        textToSpeech.shutdown();
-
+        if (textToSpeech != null) {
+            textToSpeech.shutdown();
+        }
         Log.d(TAG, "Media Button Selector: destroyed.");
     }
 
@@ -391,15 +394,8 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      */
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        // if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
-        // getListView().getChildAt(btButtonSelection).findViewById(R.id.receiverSelectionIndicator)
-        // .setVisibility(View.INVISIBLE);
-        // }
         btButtonSelection = position;
         getListView().invalidateViews();
-
-        // getListView().getChildAt(btButtonSelection).findViewById(R.id.receiverSelectionIndicator)
-        // .setVisibility(View.VISIBLE);
 
         forwardToMediaReceiver(position);
     }
@@ -416,7 +412,9 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         if (wakeLock.isHeld()) {
             wakeLock.release();
         }
-        textToSpeech.stop();
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+        }
         timeoutExecutor.shutdownNow();
         audioManager.abandonAudioFocus(this);
         preferences.edit().putInt(SELECTION_KEY, btButtonSelection).commit();
@@ -513,14 +511,6 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
             // dismiss.
             resetTimeout();
         }
-
-        // if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
-        // View selectedView = getListView().getChildAt(btButtonSelection);
-        // if (selectedView != null) {
-        // selectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
-        // }
-        // }
-
     }
 
     /**
@@ -627,12 +617,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
      */
     private void moveSelection(int amount) {
         resetTimeout();
-        // if (btButtonSelection >= 0 && btButtonSelection < receivers.size()) {
-        // View oldSelectedView = getListView().getChildAt(btButtonSelection);
-        // if (oldSelectedView != null) {
-        // oldSelectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.INVISIBLE);
-        // }
-        // }
+
         btButtonSelection += amount;
 
         if (btButtonSelection >= receivers.size()) {
@@ -647,13 +632,10 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
         getListView().invalidateViews();
         getListView().setSelection(btButtonSelection);
 
-        // View selectedView = getListView().getChildAt(btButtonSelection);
-        // if (selectedView != null) {
-        // selectedView.findViewById(R.id.receiverSelectionIndicator).setVisibility(View.VISIBLE);
-        // }
-
-        textToSpeech.speak(Utils.getAppName(receivers.get(btButtonSelection), getPackageManager()),
-                TextToSpeech.QUEUE_FLUSH, null);
+        if (textToSpeech != null) {
+            textToSpeech.speak(Utils.getAppName(receivers.get(btButtonSelection), getPackageManager()),
+                    TextToSpeech.QUEUE_FLUSH, null);
+        }
 
     }
 

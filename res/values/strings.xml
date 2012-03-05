@@ -34,4 +34,6 @@
     <string name="confirm_action_summary">When checked, confirm app by hitting play. Uncheck, will default to whatever is app is selected on timeout (one less button press).</string>
 	<string name="visible_apps_header">Apps To Show In The Selector</string>
 	<string name="selection_indicator">»</string>
+	<string name="pref_disable_tts_title">Disable text-to-speech</string>
+	<string name="pref_disable_tts_summary">Disable text-to-speech prompting on selection and navigation</string>
 </resources>
