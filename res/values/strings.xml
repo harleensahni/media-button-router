@@ -33,4 +33,5 @@
     <string name="pref_confirm_action_title">Confirm Selection</string>
     <string name="confirm_action_summary">When checked, confirm app by hitting play. Uncheck, will default to whatever is app is selected on timeout (one less button press).</string>
 	<string name="visible_apps_header">Apps To Show In The Selector</string>
+	<string name="selection_indicator">»</string>
 </resources>
