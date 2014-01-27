@@ -52,7 +52,14 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        String hiddenReceiverIdsString = PreferenceManager.getDefaultSharedPreferences(this).getString(
+                Constants.HIDDEN_APPS_KEY, "");
+        List<String> hiddenIds = Arrays.asList(hiddenReceiverIdsString.split(","));
+        final List<String> missingHiddenIds = new ArrayList<String>(hiddenIds);
+        
         addPreferencesFromResource(R.xml.preferences);
+        
 
         // Add preferences for hiding apps
         PreferenceCategory visibleAppsCategory = new PreferenceCategory(this);
@@ -77,6 +84,17 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
                         hiddenApps.append(checkBoxPreference.getKey());
                     }
                 }
+                 
+                
+                // add missing hidden apps in case they are some how being updated in the middle of this checkbox change
+                for (String missingHiddenId : missingHiddenIds) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        hiddenApps.append(",");
+                    }
+                    hiddenApps.append(missingHiddenId);
+                }
 
                 PreferenceManager.getDefaultSharedPreferences(MediaButtonConfigure.this).edit()
                         .putString(Constants.HIDDEN_APPS_KEY, hiddenApps.toString()).commit();
@@ -85,24 +103,22 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
             }
         };
 
-        String hiddenReceiverIdsString = PreferenceManager.getDefaultSharedPreferences(this).getString(
-                Constants.HIDDEN_APPS_KEY, "");
-        List<String> hiddenIds = Arrays.asList(hiddenReceiverIdsString.split(","));
-
         List<ResolveInfo> mediaReceivers = Utils.getMediaReceivers(getPackageManager(), false, null);
         for (ResolveInfo mediaReceiver : mediaReceivers) {
             if (MediaButtonReceiver.class.getName().equals(mediaReceiver.activityInfo.name)) {
                 continue;
             }
+            String receiverId = Utils.getMediaReceiverUniqueID(mediaReceiver, getPackageManager());
             CheckBoxPreference showReceiverPreference = new CheckBoxPreference(this);
             showReceiverPreference.setTitle(Utils.getAppName(mediaReceiver, getPackageManager()));
             showReceiverPreference.setPersistent(false);
-            showReceiverPreference.setKey(mediaReceiver.activityInfo.applicationInfo.sourceDir
-                    + mediaReceiver.activityInfo.name);
+            showReceiverPreference.setKey(receiverId);
             showReceiverPreference.setChecked(!hiddenIds.contains(showReceiverPreference.getKey()));
             showReceiverPreference.setOnPreferenceChangeListener(showPreferenceChangeListener);
             visibleAppsCategory.addPreference(showReceiverPreference);
             showAppCheckBoxPreferences.add(showReceiverPreference);
+            
+            missingHiddenIds.remove(receiverId);
         }
 
         Eula.show(this);
