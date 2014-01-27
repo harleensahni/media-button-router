@@ -194,6 +194,7 @@ public class ReceiverSelector extends ListActivity implements OnInitListener, Au
                         case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
                             moveSelection(-1);
                             break;
+                        case KeyEvent.KEYCODE_HEADSETHOOK:
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                             select();
                             break;
