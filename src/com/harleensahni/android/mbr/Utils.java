@@ -45,6 +45,8 @@ import android.view.KeyEvent;
 public final class Utils {
 
     private static final String TAG = "MediaButtonRouter";
+//    private static final String GOOGLE_MUSIC_RECEIVER = "com.google.blahdfdf";
+
     public static final int KEYCODE_MEDIA_PLAY = 126;
     public static final int KEYCODE_MEDIA_PAUSE = 127;
     public static final int ICS_API_LEVEL = 14;
@@ -148,19 +150,27 @@ public final class Utils {
 
             for (int i = mediaReceivers.size() - 1; i >= 0; i--) {
                 ResolveInfo mediaReceiverResolveInfo = mediaReceivers.get(i);
-                // i have to be more exact than just application name because
-                // the two versions (old and new) of google music
-                // have the same classnames for their intent receivers. I need
-                // to know where their apks live to be able to differentiate.
-                String name = mediaReceiverResolveInfo.activityInfo.applicationInfo.sourceDir
-                        + mediaReceiverResolveInfo.activityInfo.name;
-                if (hiddenIds.contains(name)) {
+              
+                if (hiddenIds.contains(getMediaReceiverUniqueID(mediaReceiverResolveInfo, packageManager))) {
                     mediaReceivers.remove(i);
                 }
             }
         }
 
         return mediaReceivers;
+    }
+    
+    public static String getMediaReceiverUniqueID(ResolveInfo resolveInfo, PackageManager packageManager) {
+        String receiverId = resolveInfo.activityInfo.name;
+        // Don't think the following is an issue anymore with the latest versions of google play, if it is i'll add back
+//        if (GOOGLE_MUSIC_RECEIVER.contains(receiverId)) {
+//        // i have to be more exact than just application name because
+//        // the two versions (old and new) of google music
+//        // have the same classnames for their intent receivers. I need
+//        // to know where their apks live to be able to differentiate.
+//            receiverId = resolveInfo.activityInfo.applicationInfo.sourceDir + receiverId;
+//        }
+        return receiverId;
     }
 
     /**
