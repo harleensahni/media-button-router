@@ -15,6 +15,8 @@
  */
 package com.harleensahni.android.mbr;
 
+import static com.harleensahni.android.mbr.Constants.TAG;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +34,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
 import com.harleensahni.android.mbr.receivers.MediaButtonReceiver;
 
@@ -126,8 +129,15 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
 
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        startActivityForResult(checkIntent, TEXT_TO_SPEECH_CHECK_CODE);
-
+        try {
+            startActivityForResult(checkIntent, TEXT_TO_SPEECH_CHECK_CODE);
+        } catch (RuntimeException re) {
+            // Unable to check tts data for some reason. This happens on Samsung devices the most.
+            Log.e(TAG, "Trying to detect text to speech failed.", re);
+            // disable warning to install tts data since it'll probably fail too. 
+            Preference ttsWarningPreference = findPreference("tts_warning");
+            ttsWarningPreference.setEnabled(false);
+        }
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Starts the media monitor service. Most of the time it should be
@@ -141,9 +151,7 @@ public class MediaButtonConfigure extends PreferenceActivity implements OnShared
                 Intent intent = new Intent(this, MediaButtonMonitorService.class);
                 startService(intent);
             }
-
         }
-
     }
 
     @Override
